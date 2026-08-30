@@ -10,14 +10,15 @@ import {
   requestUrl,
 } from "obsidian"
 
-import { NotionHubApi } from "./api"
+import { NOTIONHUB_DEVICE_AUTHORIZE_URL, NOTIONHUB_INTEGRATION_BASE_URL, NotionHubApi } from "./api"
 import { migrateLegacyCredentials, persistCredentials, runtimeCredentials } from "./credential-store"
+import { toFetchResponse } from "./fetch-response"
 import { identityFromFrontmatter } from "./markdown"
 import { safeVaultWritePath, serviceEntryVaultPath } from "./path-policy"
 import { SyncEngine, type VaultAdapter, type VaultNote } from "./sync-engine"
 import { TemplateManager } from "./template-manager"
 import { TEMPLATE_PACKS } from "./templates"
-import { DEFAULT_SETTINGS, type PluginSettings, type SyncProgress } from "./types"
+import { DEFAULT_SETTINGS, normalizePluginSettings, type PluginSettings, type SyncProgress } from "./types"
 import { parseViewSpec, renderView } from "./view-renderer"
 import { VisualDataStore } from "./visual-store"
 import { WEREAD_BOOKSHELF_VIEW, WEREAD_STATS_VIEW, WereadBookshelfView, WereadStatsView } from "./weread-views"
@@ -31,10 +32,14 @@ export default class NotionHubPlugin extends Plugin {
   private visualStore!: VisualDataStore
 
   async onload(): Promise<void> {
-    const loaded = await this.loadData() as (Partial<PluginSettings> & { credentials?: unknown }) | null
-    const migrated = migrateLegacyCredentials(loaded?.credentials, this.app.secretStorage)
-    this.settings = { ...DEFAULT_SETTINGS, ...(loaded || {}), credentials: migrated.connection }
-    if (migrated.migrated) await this.saveData(this.settings)
+    const loaded = await this.loadData() as unknown
+    const storedCredentials = loaded && typeof loaded === "object" && !Array.isArray(loaded)
+      ? (loaded as Record<string, unknown>).credentials
+      : null
+    const migrated = migrateLegacyCredentials(storedCredentials, this.app.secretStorage)
+    this.settings = normalizePluginSettings(loaded, migrated.connection)
+    // Persist the whitelist so credentials left by historical builds are removed from data.json.
+    await this.saveData(this.settings)
     this.vaultAdapter = new ObsidianVaultAdapter(this.app)
     this.visualStore = new VisualDataStore(this.vaultAdapter, this.settings)
     this.addSettingTab(new NotionHubSettingTab(this.app, this))
@@ -90,7 +95,7 @@ export default class NotionHubPlugin extends Plugin {
   }
 
   api(): NotionHubApi {
-    return new NotionHubApi(this.settings.integrationBaseUrl, runtimeCredentials(this.settings.credentials, this.app.secretStorage), async (credentials) => {
+    return new NotionHubApi(NOTIONHUB_INTEGRATION_BASE_URL, runtimeCredentials(this.settings.credentials, this.app.secretStorage), async (credentials) => {
       await this.saveSettings({ credentials: persistCredentials(credentials, this.app.secretStorage) })
     }, obsidianFetch)
   }
@@ -274,7 +279,7 @@ class DeviceModal extends Modal {
     loading.remove()
     contentEl.createEl("p", { text: `授权码：${device.userCode}` })
     const button = contentEl.createEl("button", { text: "打开授权页面" })
-    button.onclick = () => window.open(`${device.verificationUri}?user_code=${encodeURIComponent(device.userCode)}`, "_blank")
+    button.onclick = () => window.open(NOTIONHUB_DEVICE_AUTHORIZE_URL, "_blank")
     const status = contentEl.createEl("p", { text: "等待授权…" })
     const expiresAt = Date.parse(device.expiresAt)
     while (this.active && Date.now() < expiresAt) {
@@ -305,9 +310,17 @@ class NotionHubSettingTab extends PluginSettingTab {
     const { containerEl } = this
     containerEl.empty()
     const connected = this.plugin.hasConnection()
-    new Setting(containerEl).setName("设备连接").setDesc(connected ? "已连接；刷新凭据由 Obsidian SecretStorage 保存，仓库令牌仅在同步时短期获取。" : "使用浏览器确认设备授权。")
+    new Setting(containerEl).setName("设备连接").setDesc(connected ? "已连接；刷新凭据由 Obsidian SecretStorage 保存，私有同步内容由 NotionHub 安全转发。" : "使用浏览器确认设备授权，无需再次连接 GitHub。")
       .addButton((button) => button.setButtonText(connected ? "重新连接" : "连接").onClick(() => new DeviceModal(this.app, this.plugin).open()))
-      .addButton((button) => button.setButtonText("断开").setDisabled(!connected).onClick(async () => { await this.plugin.api().revoke(); this.display() }))
+      .addButton((button) => button.setButtonText("断开").setDisabled(!connected).onClick(async () => {
+        try {
+          await this.plugin.api().revoke()
+        } catch {
+          new Notice("本机连接已清除；服务器撤销暂时失败，重新连接前不会再使用旧凭据。", 10_000)
+        } finally {
+          this.display()
+        }
+      }))
     new Setting(containerEl).setName("Vault 根目录").setDesc("生成内容写入此目录。")
       .addText((text) => text.setValue(this.plugin.settings.vaultRoot).onChange(async (value) => this.plugin.saveSettings({ vaultRoot: value.trim() || "NotionHub" })))
     new Setting(containerEl).setName("启动时同步").addToggle((toggle) => toggle.setValue(this.plugin.settings.syncOnStartup).onChange(async (value) => this.plugin.saveSettings({ syncOnStartup: value })))
@@ -346,8 +359,5 @@ async function obsidianFetch(input: RequestInfo | URL, init: RequestInit = {}): 
     body: typeof init.body === "string" ? init.body : undefined,
     throw: false,
   })
-  return new Response(response.arrayBuffer, {
-    status: response.status,
-    headers: response.headers,
-  })
+  return toFetchResponse(init.method, response)
 }

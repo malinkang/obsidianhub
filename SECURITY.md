@@ -14,7 +14,8 @@ Include the affected version, platform, reproduction steps, impact, and a minima
 
 - The long-lived refresh credential is stored through Obsidian SecretStorage.
 - Access credentials stay in memory and are refreshed when needed.
-- GitHub repository credentials are short-lived and requested for read-only use.
+- GitHub credentials remain inside NotionHub's server-side trust boundary and are never returned to the plugin.
+- Vault reads use the revocable NotionHub device session and are constrained by the versioned manifest.
 - Disconnecting revokes the device session and clears the local refresh credential.
 
 No credential, Vault export, private manifest, or real user fixture belongs in this repository. Test credentials must remain obviously synthetic.

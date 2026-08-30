@@ -1,6 +1,6 @@
 # ObsidianHub
 
-ObsidianHub is the pull-only Obsidian client for NotionHub. It connects through the NotionHub device flow, receives short-lived read-only GitHub credentials, and incrementally imports a private generated Markdown repository.
+ObsidianHub is the pull-only Obsidian client for NotionHub. It connects through the NotionHub device flow and incrementally imports generated Markdown through the NotionHub read proxy. GitHub credentials stay inside the hosted NotionHub service and are never delivered to the plugin.
 
 The plugin supports desktop and mobile (`isDesktopOnly=false`) and uses only Obsidian Vault APIs and `fetch`. It never requires Git, Node.js, Electron, or a shell on the device, and it never uploads handwritten Vault content.
 
@@ -8,9 +8,9 @@ The plugin supports desktop and mobile (`isDesktopOnly=false`) and uses only Obs
 
 - Obsidian 1.11.4 or newer. This version is required for Obsidian SecretStorage.
 - A NotionHub account with a generated private sync repository.
-- Network access to `i.notionhub.app`, `api.github.com`, and any public HTTPS image hosts referenced by synchronized records.
+- Network access to `i.notionhub.app` and any public HTTPS image hosts referenced by synchronized records.
 
-The refresh credential is stored through Obsidian SecretStorage, never in the plugin `data.json`. GitHub credentials are short-lived and used only for read-only repository requests. ObsidianHub has no analytics, advertising SDK, or telemetry. See [Privacy](PRIVACY.md) and [Security](SECURITY.md) before connecting an account.
+The refresh credential is stored through Obsidian SecretStorage, never in the plugin `data.json`. The plugin sends only its NotionHub device access credential to `i.notionhub.app`; it does not receive or store a GitHub credential. ObsidianHub has no analytics, advertising SDK, or telemetry. See [Privacy](PRIVACY.md) and [Security](SECURITY.md) before connecting an account.
 
 ## Use
 

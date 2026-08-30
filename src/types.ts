@@ -96,15 +96,6 @@ export type ServiceViewSettings = {
   hiddenViews: string[]
 }
 
-export type RepositoryStatus = {
-  bound: boolean
-  status: string
-  owner: string
-  name: string
-  fullName: string
-  defaultBranch: string
-}
-
 export type DeviceCredentials = {
   accessToken: string
   refreshToken: string
@@ -117,7 +108,6 @@ export type StoredDeviceConnection = {
 }
 
 export type PluginSettings = {
-  integrationBaseUrl: string
   credentials: StoredDeviceConnection | null
   syncOnStartup: boolean
   intervalMinutes: number
@@ -131,7 +121,6 @@ export type PluginSettings = {
 }
 
 export const DEFAULT_SETTINGS: PluginSettings = {
-  integrationBaseUrl: "https://i.notionhub.app/v1",
   credentials: null,
   syncOnStartup: true,
   intervalMinutes: 30,
@@ -142,6 +131,108 @@ export const DEFAULT_SETTINGS: PluginSettings = {
   lastManifestEtag: "",
   lastManifest: null,
   serviceViews: {}
+}
+
+export function normalizePluginSettings(value: unknown, credentials: StoredDeviceConnection | null): PluginSettings {
+  const source = isRecord(value) ? value : {}
+  return {
+    credentials,
+    syncOnStartup: typeof source.syncOnStartup === "boolean" ? source.syncOnStartup : DEFAULT_SETTINGS.syncOnStartup,
+    intervalMinutes: finiteNumber(source.intervalMinutes, DEFAULT_SETTINGS.intervalMinutes),
+    vaultRoot: nonEmptyString(source.vaultRoot, DEFAULT_SETTINGS.vaultRoot),
+    downloadImages: typeof source.downloadImages === "boolean" ? source.downloadImages : DEFAULT_SETTINGS.downloadImages,
+    serviceFolders: stringMap(source.serviceFolders),
+    lastCommitSha: typeof source.lastCommitSha === "string" ? source.lastCommitSha : "",
+    lastManifestEtag: typeof source.lastManifestEtag === "string" ? source.lastManifestEtag : "",
+    lastManifest: normalizeVaultManifest(source.lastManifest),
+    serviceViews: normalizeServiceViews(source.serviceViews),
+  }
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return Boolean(value) && typeof value === "object" && !Array.isArray(value)
+}
+
+function nonEmptyString(value: unknown, fallback: string): string {
+  return typeof value === "string" && value.trim() ? value : fallback
+}
+
+function finiteNumber(value: unknown, fallback: number): number {
+  return typeof value === "number" && Number.isFinite(value) ? value : fallback
+}
+
+function stringMap(value: unknown): Record<string, string> {
+  if (!isRecord(value)) return {}
+  return Object.fromEntries(Object.entries(value).filter((entry): entry is [string, string] => typeof entry[1] === "string"))
+}
+
+function normalizeServiceViews(value: unknown): Record<string, Partial<ServiceViewSettings>> {
+  if (!isRecord(value)) return {}
+  const result: Record<string, Partial<ServiceViewSettings>> = {}
+  for (const [service, candidate] of Object.entries(value)) {
+    if (!isRecord(candidate)) continue
+    const settings: Partial<ServiceViewSettings> = {}
+    if (["30d", "90d", "365d", "all"].includes(String(candidate.range))) settings.range = candidate.range as ServiceViewSettings["range"]
+    if (["newest", "oldest", "title"].includes(String(candidate.sort))) settings.sort = candidate.sort as ServiceViewSettings["sort"]
+    if (typeof candidate.color === "string") settings.color = candidate.color
+    if (typeof candidate.groupBy === "string") settings.groupBy = candidate.groupBy
+    if (Array.isArray(candidate.hiddenViews)) settings.hiddenViews = candidate.hiddenViews.filter((item): item is string => typeof item === "string")
+    result[service] = settings
+  }
+  return result
+}
+
+function normalizeVaultManifest(value: unknown): VaultManifest | null {
+  if (!isRecord(value) || ![1, 2].includes(value.schemaVersion as number) || !isRecord(value.entries)) return null
+  const entries: Record<string, ManifestEntry> = {}
+  for (const [key, candidate] of Object.entries(value.entries)) {
+    if (!isRecord(candidate)) return null
+    const required = ["service", "entityType", "entityId", "path", "contentHash", "updatedAt"] as const
+    if (required.some((field) => typeof candidate[field] !== "string")) return null
+    entries[key] = {
+      service: candidate.service as string,
+      entityType: candidate.entityType as string,
+      entityId: candidate.entityId as string,
+      path: candidate.path as string,
+      contentHash: candidate.contentHash as string,
+      updatedAt: candidate.updatedAt as string,
+      ...(typeof candidate.title === "string" ? { title: candidate.title } : {}),
+      ...(typeof candidate.tombstone === "boolean" ? { tombstone: candidate.tombstone } : {}),
+      ...(normalizeVisualMetadata(candidate.view) ? { view: normalizeVisualMetadata(candidate.view)! } : {}),
+    }
+  }
+  return {
+    schemaVersion: value.schemaVersion as number,
+    entries,
+    ...(typeof value.sourceRevision === "string" ? { sourceRevision: value.sourceRevision } : {}),
+    ...(typeof value.generatedAt === "string" || value.generatedAt === null ? { generatedAt: value.generatedAt as string | null } : {}),
+    ...(normalizeArtifacts(value.catalogs) ? { catalogs: normalizeArtifacts(value.catalogs)! } : {}),
+    ...(normalizeArtifacts(value.analytics) ? { analytics: normalizeArtifacts(value.analytics)! } : {}),
+  }
+}
+
+function normalizeArtifacts(value: unknown): Record<string, ManifestArtifact> | null {
+  if (value === undefined) return null
+  if (!isRecord(value)) return null
+  const result: Record<string, ManifestArtifact> = {}
+  for (const [service, candidate] of Object.entries(value)) {
+    if (!isRecord(candidate) || typeof candidate.path !== "string" || typeof candidate.contentHash !== "string" || typeof candidate.schemaVersion !== "number") return null
+    result[service] = { path: candidate.path, contentHash: candidate.contentHash, schemaVersion: candidate.schemaVersion }
+  }
+  return result
+}
+
+function normalizeVisualMetadata(value: unknown): VisualMetadata | null {
+  if (!isRecord(value) || typeof value.schemaVersion !== "number") return null
+  if (!isRecord(value.dates) || !isRecord(value.dimensions) || !isRecord(value.measures) || !isRecord(value.media)) return null
+  const dates = Object.fromEntries(Object.entries(value.dates).filter((entry): entry is [string, string] => typeof entry[1] === "string"))
+  const dimensions = Object.fromEntries(Object.entries(value.dimensions).filter((entry): entry is [string, string | string[] | boolean] => {
+    const item = entry[1]
+    return typeof item === "string" || typeof item === "boolean" || (Array.isArray(item) && item.every((part) => typeof part === "string"))
+  }))
+  const measures = Object.fromEntries(Object.entries(value.measures).filter((entry): entry is [string, number] => typeof entry[1] === "number" && Number.isFinite(entry[1])))
+  const media = Object.fromEntries(Object.entries(value.media).filter((entry): entry is [string, string[]] => Array.isArray(entry[1]) && entry[1].every((part) => typeof part === "string")))
+  return { schemaVersion: value.schemaVersion, dates, dimensions, measures, media }
 }
 
 export type SyncProgress = {

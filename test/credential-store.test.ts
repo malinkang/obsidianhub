@@ -2,7 +2,7 @@ import assert from "node:assert/strict"
 import test from "node:test"
 
 import { REFRESH_TOKEN_SECRET_ID, migrateLegacyCredentials, persistCredentials, runtimeCredentials } from "../src/credential-store"
-import type { DeviceCredentials } from "../src/types"
+import { normalizePluginSettings, type DeviceCredentials } from "../src/types"
 
 class Secrets {
   values = new Map<string, string>()
@@ -41,4 +41,19 @@ test("disconnect clears the stored refresh credential", () => {
   persistCredentials(credentials, secrets)
   assert.equal(persistCredentials(null, secrets), null)
   assert.equal(secrets.getSecret(REFRESH_TOKEN_SECRET_ID), null)
+})
+
+test("settings normalization removes all historical repository credentials", () => {
+  const normalized = normalizePluginSettings({
+    vaultRoot: "Notes",
+    credentials: { refreshToken: "legacy-refresh" },
+    githubToken: "legacy-github",
+    repositoryToken: "legacy-repository",
+    repositoryCredential: { token: "legacy-object" },
+    integrationBaseUrl: "https://attacker.invalid/v1",
+    unknownSetting: "drop-me",
+  }, { refreshExpiresAt: "2031-01-01T00:00:00Z" })
+  assert.equal(normalized.vaultRoot, "Notes")
+  assert.deepEqual(normalized.credentials, { refreshExpiresAt: "2031-01-01T00:00:00Z" })
+  assert.doesNotMatch(JSON.stringify(normalized), /legacy|githubToken|repositoryToken|repositoryCredential|integrationBaseUrl|attacker|unknownSetting/)
 })

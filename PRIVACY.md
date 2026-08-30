@@ -16,9 +16,8 @@ Vault content may be included in any third-party sync or backup product configur
 
 ObsidianHub makes the following requests only to provide features requested by the user:
 
-1. `i.notionhub.app` for device authorization, credential refresh, revocation, and issuance of a short-lived repository credential.
-2. `api.github.com` to read the commit, manifest, Markdown, catalog, and analytics files from the private generated repository returned by NotionHub.
-3. Public HTTPS image hosts referenced by synchronized records when a Gallery is rendered. If image caching is enabled, the plugin downloads supported raster images to the Vault. Private-network, insecure HTTP, credential-bearing, SVG, and oversized image URLs are rejected.
+1. `i.notionhub.app` for device authorization, credential refresh, revocation, and read-only delivery of the current commit, manifest, Markdown, catalog, and analytics files. The hosted service mediates private repository access; no GitHub credential is returned to ObsidianHub.
+2. Public HTTPS image hosts referenced by synchronized records when a Gallery is rendered. If image caching is enabled, the plugin downloads supported raster images to the Vault. Private-network, insecure HTTP, credential-bearing, SVG, and oversized image URLs are rejected.
 
 The plugin does not contain analytics, advertising, fingerprinting, crash reporting, or telemetry SDKs. It does not sell personal information.
 

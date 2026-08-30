@@ -32,8 +32,6 @@ class Reader {
   async file(path: string) { const value = this.files.get(path); if (!value) throw new Error("missing"); return value }
 }
 
-const api = { repositoryToken: async () => ({ repository: { bound: true, status: "ready", owner: "u", name: "v", fullName: "u/v", defaultBranch: "main" }, token: "read", expiresAt: "2030", permissions: { contents: "read" as const } }) }
-
 test("first sync, no-change, update after move, and user-preserving tombstone are idempotent", async () => {
   const vault = new MemoryVault()
   const reader = new Reader()
@@ -41,7 +39,7 @@ test("first sync, no-change, update after move, and user-preserving tombstone ar
   reader.files.set("services/weread/book/book-1.md", remote1)
   reader.manifestValue = await manifest(remote1)
   let settings: PluginSettings = { ...DEFAULT_SETTINGS, serviceFolders: {}, lastManifest: null }
-  const engine = new SyncEngine(api as any, vault, settings, async (patch) => { settings = { ...settings, ...patch } }, () => {}, () => reader as any)
+  const engine = new SyncEngine(reader, vault, settings, async (patch) => { settings = { ...settings, ...patch } }, () => {})
 
   const first = await engine.run()
   assert.equal(first.created, 1)
@@ -80,7 +78,7 @@ test("interruption does not advance checkpoint and retry completes", async () =>
   reader.files.set("services/weread/book/book-1.md", content)
   reader.manifestValue = await manifest(content)
   let saves = 0
-  const engine = new SyncEngine(api as any, vault, { ...DEFAULT_SETTINGS }, async () => { saves += 1 }, () => {}, () => reader as any)
+  const engine = new SyncEngine(reader, vault, { ...DEFAULT_SETTINGS }, async () => { saves += 1 }, () => {})
   await assert.rejects(engine.run(), /interrupted/)
   assert.equal(saves, 0)
   assert.equal((await engine.run()).created, 1)
@@ -91,8 +89,12 @@ test("cancellation stops before repository access", async () => {
   const controller = new AbortController()
   controller.abort()
   let requested = false
-  const cancelledApi = { repositoryToken: async () => { requested = true; return api.repositoryToken() } }
-  const engine = new SyncEngine(cancelledApi as any, new MemoryVault(), { ...DEFAULT_SETTINGS }, async () => {}, () => {})
+  const cancelledReader = {
+    headCommit: async () => { requested = true; return "a".repeat(40) },
+    manifest: async () => { throw new Error("unexpected") },
+    file: async () => { throw new Error("unexpected") },
+  }
+  const engine = new SyncEngine(cancelledReader, new MemoryVault(), { ...DEFAULT_SETTINGS }, async () => {}, () => {})
   await assert.rejects(engine.run(controller.signal), (error: unknown) => error instanceof DOMException && error.name === "AbortError")
   assert.equal(requested, false)
 })
@@ -145,7 +147,7 @@ test("all 22 service namespaces are consumed atomically from one manifest", asyn
   }
   reader.manifestValue = { schemaVersion: 1, entries }
   let settings: PluginSettings = { ...DEFAULT_SETTINGS, serviceFolders: {}, lastManifest: null }
-  const engine = new SyncEngine(api as any, vault, settings, async (patch) => { settings = { ...settings, ...patch } }, () => {}, () => reader as any)
+  const engine = new SyncEngine(reader, vault, settings, async (patch) => { settings = { ...settings, ...patch } }, () => {})
   const result = await engine.run()
   assert.equal(result.created, services.length)
   assert.equal(vault.files.size, services.length * 2)
@@ -155,6 +157,36 @@ test("all 22 service namespaces are consumed atomically from one manifest", asyn
     assert.match(detail, /notionhub-detail-template-start/, `${service} detail template`)
     assert.ok(vault.files.has(`NotionHub/services/${service}/首页.md`), `${service} template`)
   }
+})
+
+test("large initial sync uses bounded Worker batches instead of one request per note", async () => {
+  const vault = new MemoryVault()
+  const reader = new Reader()
+  const entries: Record<string, ManifestEntry> = {}
+  for (let index = 0; index < 121; index += 1) {
+    const path = `services/weread/book/book-${index}.md`
+    const content = noteForId(`book-${index}`)
+    reader.files.set(path, content)
+    entries[`weread:book:book-${index}`] = {
+      service: "weread", entityType: "book", entityId: `book-${index}`, path,
+      contentHash: await sha256Hex(content), updatedAt: "2026-08-29T00:00:00Z",
+    }
+  }
+  reader.manifestValue = { schemaVersion: 2, entries }
+  const batches: number[] = []
+  const batchReader = {
+    headCommit: () => reader.headCommit(),
+    manifest: () => reader.manifest(),
+    file: async () => { throw new Error("singular file fallback should not run") },
+    readFiles: async (paths: string[]) => {
+      batches.push(paths.length)
+      return new Map(paths.map((path) => [path, reader.files.get(path)!]))
+    },
+  }
+  const engine = new SyncEngine(batchReader, vault, { ...DEFAULT_SETTINGS }, async () => {}, () => {})
+  const result = await engine.run()
+  assert.equal(result.created, 121)
+  assert.deepEqual(batches, [50, 50, 21])
 })
 
 test("manifest v2 visual artifacts are hash-verified, cached and install templates", async () => {
@@ -173,7 +205,7 @@ test("manifest v2 visual artifacts are hash-verified, cached and install templat
     catalogs: { weread: { path: ".notionhub/catalog/weread.json", contentHash: await sha256Hex(catalogContent), schemaVersion: 1 } },
     analytics: { weread: { path: ".notionhub/analytics/weread.json", contentHash: await sha256Hex(analyticsContent), schemaVersion: 1 } },
   }
-  const engine = new SyncEngine(api as any, vault, { ...DEFAULT_SETTINGS }, async () => {}, () => {}, () => reader as any)
+  const engine = new SyncEngine(reader, vault, { ...DEFAULT_SETTINGS }, async () => {}, () => {})
   const result = await engine.run()
   assert.equal(result.templatesCreated, 1)
   assert.equal(vault.files.get("NotionHub/.notionhub/catalog/weread.json"), catalogContent)
@@ -196,7 +228,7 @@ test("manifest paths cannot escape their service or target Obsidian configuratio
     base.entries["weread:book:book-1"]!.path = path
     reader.manifestValue = base
     reader.files.set(path, content)
-    const engine = new SyncEngine(api as any, vault, { ...DEFAULT_SETTINGS }, async () => {}, () => {}, () => reader as any)
+    const engine = new SyncEngine(reader, vault, { ...DEFAULT_SETTINGS }, async () => {}, () => {})
     await assert.rejects(engine.run(), /路径|不安全/)
     assert.equal(vault.files.size, 0)
   }
@@ -213,7 +245,7 @@ test("configured output paths cannot escape the vault or write into .obsidian", 
     const content = note("unsafe settings")
     reader.manifestValue = await manifest(content)
     reader.files.set("services/weread/book/book-1.md", content)
-    const engine = new SyncEngine(api as any, vault, { ...DEFAULT_SETTINGS, ...settings }, async () => {}, () => {}, () => reader as any)
+    const engine = new SyncEngine(reader, vault, { ...DEFAULT_SETTINGS, ...settings }, async () => {}, () => {})
     await assert.rejects(engine.run(), /路径|Obsidian 配置目录/)
     assert.equal(vault.files.size, 0)
   }
@@ -227,7 +259,7 @@ test("visual artifact paths must match their exact service destination", async (
     entries: {},
     catalogs: { weread: { path: ".notionhub/catalog/../../.obsidian/evil.json", contentHash: "unused", schemaVersion: 1 } },
   }
-  const engine = new SyncEngine(api as any, vault, { ...DEFAULT_SETTINGS }, async () => {}, () => {}, () => reader as any)
+  const engine = new SyncEngine(reader, vault, { ...DEFAULT_SETTINGS }, async () => {}, () => {})
   await assert.rejects(engine.run(), /可视化路径无效/)
   assert.equal(vault.files.size, 0)
 })
@@ -242,6 +274,10 @@ async function manifest(content: string): Promise<VaultManifest> {
 
 function note(version: string): string {
   return `---\nnotionhub_service: weread\nnotionhub_entity_type: book\nnotionhub_entity_id: book-1\n---\n<!-- notionhub-managed-start -->\nfixture ${version}\n<!-- notionhub-managed-end -->\n`
+}
+
+function noteForId(entityId: string): string {
+  return `---\nnotionhub_service: weread\nnotionhub_entity_type: book\nnotionhub_entity_id: ${entityId}\n---\n<!-- notionhub-managed-start -->\n${entityId}\n<!-- notionhub-managed-end -->\n`
 }
 
 function serviceNote(service: string, entityType: string): string {

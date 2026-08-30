@@ -1,4 +1,3 @@
-import { GithubRepositoryReader, NotionHubApi } from "./api"
 import { archiveManagedMarkdown, entityKey, mergeManagedMarkdown, sha256Hex, type EntityIdentity } from "./markdown"
 import { TemplateManager } from "./template-manager"
 import { materializeDetailLayout } from "./detail-template"
@@ -17,24 +16,30 @@ export interface VaultAdapter {
   writeBinary?(path: string, content: ArrayBuffer): Promise<void>
 }
 
+export interface VaultContentReader {
+  headCommit(signal?: AbortSignal): Promise<string>
+  manifest(commitSha: string, etag: string, signal?: AbortSignal): Promise<{ manifest: VaultManifest | null; etag: string; unchanged: boolean }>
+  file(path: string, commitSha: string, signal?: AbortSignal): Promise<string>
+  readFiles?(paths: string[], commitSha: string, signal?: AbortSignal): Promise<Map<string, string>>
+}
+
+const DEVICE_FILE_BATCH_SIZE = 50
+
 export class SyncEngine {
   constructor(
-    private readonly api: NotionHubApi,
+    private readonly reader: VaultContentReader,
     private readonly vault: VaultAdapter,
     private settings: PluginSettings,
     private readonly saveSettings: (patch: Partial<PluginSettings>) => Promise<void>,
     private readonly progress: (progress: SyncProgress) => void,
-    private readonly readerFactory = (repository: Awaited<ReturnType<NotionHubApi["repositoryToken"]>>["repository"], token: string) => new GithubRepositoryReader(repository, token),
     private readonly assetFetcher: typeof fetch = fetch,
   ) {}
 
   async run(signal?: AbortSignal): Promise<SyncSummary> {
     this.progress({ phase: "fetching", completed: 0, total: 0, message: "正在读取私有仓库" })
     this.assertActive(signal)
-    const credential = await this.api.repositoryToken()
-    const reader = this.readerFactory(credential.repository, credential.token)
-    const commitSha = await reader.headCommit(signal)
-    const remote = await reader.manifest(commitSha, this.settings.lastManifestEtag, signal)
+    const commitSha = await this.reader.headCommit(signal)
+    const remote = await this.reader.manifest(commitSha, this.settings.lastManifestEtag, signal)
     const manifest = remote.manifest || this.settings.lastManifest
     if (!manifest) throw new Error("仓库 manifest 不可用")
     validateManifestPaths(manifest)
@@ -52,13 +57,24 @@ export class SyncEngine {
     const total = changed.length + deleted.length
     let completed = 0
 
-    for (const entry of changed) {
+    let remoteBatch = new Map<string, string>()
+    for (let entryIndex = 0; entryIndex < changed.length; entryIndex += 1) {
+      const entry = changed[entryIndex]!
       this.assertActive(signal)
       this.progress({ phase: "applying", completed, total, message: `${entry.service}: ${entry.entityId}` })
       if (entry.tombstone) {
         removed += await this.archive(byEntity.get(entryKey(entry)))
       } else {
-        const remoteContent = await reader.file(entry.path, commitSha, signal)
+        if (typeof this.reader.readFiles === "function" && !remoteBatch.has(entry.path)) {
+          const paths: string[] = []
+          for (let candidateIndex = entryIndex; candidateIndex < changed.length && paths.length < DEVICE_FILE_BATCH_SIZE; candidateIndex += 1) {
+            const candidate = changed[candidateIndex]!
+            if (!candidate.tombstone) paths.push(candidate.path)
+          }
+          remoteBatch = await this.reader.readFiles(paths, commitSha, signal)
+        }
+        const remoteContent = remoteBatch.get(entry.path) ?? await this.reader.file(entry.path, commitSha, signal)
+        remoteBatch.delete(entry.path)
         const digest = await sha256Hex(remoteContent)
         if (digest !== entry.contentHash) throw new Error(`${entry.path} 内容校验失败`)
         const existing = byEntity.get(entryKey(entry))
@@ -82,7 +98,7 @@ export class SyncEngine {
       completed += 1
     }
 
-    await this.syncArtifacts(reader, commitSha, manifest, previous, signal)
+    await this.syncArtifacts(this.reader, commitSha, manifest, previous, signal)
     const services = new Set([
       ...Object.keys(manifest.catalogs || {}),
       ...Object.values(manifest.entries).map((entry) => entry.service),
@@ -103,7 +119,7 @@ export class SyncEngine {
   }
 
   private async syncArtifacts(
-    reader: GithubRepositoryReader,
+    reader: VaultContentReader,
     commitSha: string,
     manifest: VaultManifest,
     previous: VaultManifest,
