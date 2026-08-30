@@ -22,7 +22,10 @@ test("expired device access refreshes before Worker-backed Vault reads", async (
     const url = String(request)
     calls.push({ url, authorization: new Headers(init?.headers).get("Authorization") || "", body: String(init?.body || "") })
     if (url.endsWith("/refresh")) {
-      return Response.json({ code: 200, data: { accessToken: "fresh-access", accessExpiresAt: "2030-01-01T00:00:00Z" } })
+      return Response.json({ code: 200, data: {
+        accessToken: "fresh-access", refreshToken: "rotated-refresh",
+        accessExpiresAt: "2030-01-01T00:00:00Z", refreshExpiresAt: credentials.refreshExpiresAt,
+      } })
     }
     return Response.json({ code: 200, data: { commit: COMMIT, branch: "main" } })
   }
@@ -30,6 +33,8 @@ test("expired device access refreshes before Worker-backed Vault reads", async (
   assert.equal(await api.headCommit(), COMMIT)
   assert.ok(saved)
   assert.equal((saved as DeviceCredentials).accessToken, "fresh-access")
+  assert.equal((saved as DeviceCredentials).refreshToken, "rotated-refresh")
+  assert.equal((saved as DeviceCredentials).refreshExpiresAt, credentials.refreshExpiresAt)
   assert.match(calls[0]!.body, /refresh-secret/)
   assert.equal(calls[1]!.authorization, "Bearer fresh-access")
   assert.ok(calls.every((call) => call.url.startsWith("https://integration.test/v1/obsidian/device/")))
@@ -109,7 +114,10 @@ test("a rejected device access token is refreshed and retried once", async () =>
   const fetcher = async (request: RequestInfo | URL, init?: RequestInit) => {
     const url = String(request)
     if (url.endsWith("/refresh")) {
-      return Response.json({ code: 200, data: { accessToken: "renewed-access", accessExpiresAt: "2030-02-01T00:00:00Z" } })
+      return Response.json({ code: 200, data: {
+        accessToken: "renewed-access", refreshToken: "renewed-refresh",
+        accessExpiresAt: "2030-02-01T00:00:00Z", refreshExpiresAt: credentials.refreshExpiresAt,
+      } })
     }
     authorizations.push(new Headers(init?.headers).get("Authorization") || "")
     if (authorizations.length === 1) return Response.json({ code: 401, message: "expired", data: null }, { status: 401 })
@@ -118,6 +126,26 @@ test("a rejected device access token is refreshed and retried once", async () =>
   const api = new NotionHubApi("https://integration.test/v1", credentials, async () => {}, fetcher as typeof fetch)
   assert.equal(await api.headCommit(), COMMIT)
   assert.deepEqual(authorizations, ["Bearer stale-access", "Bearer renewed-access"])
+})
+
+test("device refresh rejects a response that does not rotate and return the refresh credential", async () => {
+  const credentials: DeviceCredentials = {
+    accessToken: "expired-access", refreshToken: "refresh-secret",
+    accessExpiresAt: new Date(0).toISOString(), refreshExpiresAt: "2031-01-01T00:00:00Z",
+  }
+  let saved = false
+  const api = new NotionHubApi(
+    "https://integration.test/v1",
+    credentials,
+    async () => { saved = true },
+    (async () => Response.json({
+      code: 200,
+      data: { accessToken: "fresh-access", accessExpiresAt: "2030-01-01T00:00:00Z" },
+    })) as typeof fetch,
+  )
+
+  await assert.rejects(api.ensureDeviceAccess(), /未提供轮换后的设备凭证/)
+  assert.equal(saved, false)
 })
 
 test("Worker failures are surfaced without returning private repository details", async () => {

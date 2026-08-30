@@ -100,12 +100,16 @@ export class NotionHubApi {
     if (!forceRefresh && this.credentials.accessToken && Date.parse(this.credentials.accessExpiresAt) - Date.now() > 60_000) {
       return this.credentials.accessToken
     }
-    const refreshed = await this.integration<{ accessToken: string; accessExpiresAt: string }>(
+    const previousRefreshToken = this.credentials.refreshToken
+    const refreshed = await this.integration<unknown>(
       "/obsidian/device/refresh",
       { method: "POST", body: JSON.stringify({ refreshToken: this.credentials.refreshToken }) },
       false,
     )
-    this.credentials = { ...this.credentials, ...refreshed }
+    if (!isDeviceCredentials(refreshed) || refreshed.refreshToken === previousRefreshToken) {
+      throw new Error("NotionHub 刷新响应未提供轮换后的设备凭证")
+    }
+    this.credentials = refreshed
     await this.persistCredentials(this.credentials)
     return refreshed.accessToken
   }
@@ -189,6 +193,15 @@ export class NotionHubApi {
 
 function isCommitSha(value: string): boolean {
   return /^[0-9a-f]{40}$/i.test(value)
+}
+
+function isDeviceCredentials(value: unknown): value is DeviceCredentials {
+  if (!value || typeof value !== "object") return false
+  const credentials = value as Partial<DeviceCredentials>
+  return [credentials.accessToken, credentials.refreshToken, credentials.accessExpiresAt, credentials.refreshExpiresAt]
+    .every((item) => typeof item === "string" && item.length > 0)
+    && Number.isFinite(Date.parse(credentials.accessExpiresAt!))
+    && Number.isFinite(Date.parse(credentials.refreshExpiresAt!))
 }
 
 function assertCommitSha(value: string): void {
