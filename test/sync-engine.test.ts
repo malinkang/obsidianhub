@@ -108,6 +108,22 @@ test("optional image download is deterministic and failures stay non-blocking", 
   assert.equal(preserved, markdown)
 })
 
+test("image caching blocks private, insecure, oversized and active image content", async () => {
+  const vault = new MemoryVault()
+  const entry = (await manifest(note("v1"))).entries["weread:book:book-1"]!
+  let requests = 0
+  const fetcher = async () => { requests += 1; return new Response(new Uint8Array([1]), { headers: { "Content-Type": "image/png" } }) }
+  const unsafe = "![a](http://images.example/a.png) ![b](https://127.0.0.1/b.png)"
+  assert.equal(await cacheExternalImages(unsafe, entry, "NotionHub", vault, fetcher as typeof fetch), unsafe)
+  assert.equal(requests, 0)
+
+  const svg = "![svg](https://images.example/a.svg)"
+  assert.equal(await cacheExternalImages(svg, entry, "NotionHub", vault, async () => new Response("<svg/>", { headers: { "Content-Type": "image/svg+xml" } }) as any), svg)
+  const large = "![large](https://images.example/a.png)"
+  assert.equal(await cacheExternalImages(large, entry, "NotionHub", vault, async () => new Response(new Uint8Array([1]), { headers: { "Content-Type": "image/png", "Content-Length": String(16 * 1024 * 1024) } }) as any), large)
+  assert.equal(vault.binaries.size, 0)
+})
+
 test("all 22 service namespaces are consumed atomically from one manifest", async () => {
   const services = [
     "weread", "podcast", "douban", "keep", "dida", "flomo", "duolingo", "bbdc",
@@ -163,6 +179,57 @@ test("manifest v2 visual artifacts are hash-verified, cached and install templat
   assert.equal(vault.files.get("NotionHub/.notionhub/catalog/weread.json"), catalogContent)
   assert.equal(vault.files.get("NotionHub/.notionhub/analytics/weread.json"), analyticsContent)
   assert.match(vault.files.get("NotionHub/services/weread/首页.md") || "", /```notionhub-view/)
+})
+
+test("manifest paths cannot escape their service or target Obsidian configuration", async () => {
+  const unsafePaths = [
+    "services/weread/../../.obsidian/plugins/evil.md",
+    "services/weread/book\\..\\evil.md",
+    ".obsidian/plugins/evil.md",
+    "services/douban/book/book-1.md",
+  ]
+  for (const path of unsafePaths) {
+    const vault = new MemoryVault()
+    const reader = new Reader()
+    const content = note("unsafe")
+    const base = await manifest(content)
+    base.entries["weread:book:book-1"]!.path = path
+    reader.manifestValue = base
+    reader.files.set(path, content)
+    const engine = new SyncEngine(api as any, vault, { ...DEFAULT_SETTINGS }, async () => {}, () => {}, () => reader as any)
+    await assert.rejects(engine.run(), /路径|不安全/)
+    assert.equal(vault.files.size, 0)
+  }
+})
+
+test("configured output paths cannot escape the vault or write into .obsidian", async () => {
+  for (const settings of [
+    { vaultRoot: "../outside" },
+    { vaultRoot: ".obsidian/plugins/notionhub" },
+    { serviceFolders: { weread: "../../outside" } },
+  ]) {
+    const vault = new MemoryVault()
+    const reader = new Reader()
+    const content = note("unsafe settings")
+    reader.manifestValue = await manifest(content)
+    reader.files.set("services/weread/book/book-1.md", content)
+    const engine = new SyncEngine(api as any, vault, { ...DEFAULT_SETTINGS, ...settings }, async () => {}, () => {}, () => reader as any)
+    await assert.rejects(engine.run(), /路径|Obsidian 配置目录/)
+    assert.equal(vault.files.size, 0)
+  }
+})
+
+test("visual artifact paths must match their exact service destination", async () => {
+  const vault = new MemoryVault()
+  const reader = new Reader()
+  reader.manifestValue = {
+    schemaVersion: 2,
+    entries: {},
+    catalogs: { weread: { path: ".notionhub/catalog/../../.obsidian/evil.json", contentHash: "unused", schemaVersion: 1 } },
+  }
+  const engine = new SyncEngine(api as any, vault, { ...DEFAULT_SETTINGS }, async () => {}, () => {}, () => reader as any)
+  await assert.rejects(engine.run(), /可视化路径无效/)
+  assert.equal(vault.files.size, 0)
 })
 
 async function manifest(content: string): Promise<VaultManifest> {

@@ -1,4 +1,5 @@
 import { TEMPLATE_END, TEMPLATE_PACKS, TEMPLATE_START, renderDashboard, type TemplatePackV1 } from "./templates"
+import { joinVaultPath, safeConfiguredPath, safeVaultWritePath } from "./path-policy"
 import type { PluginSettings } from "./types"
 
 const MANAGED_FRONTMATTER = /^notionhub_(?:template_id|template_version|service)\s*:/
@@ -25,7 +26,8 @@ export class TemplateManager {
     for (const service of [...new Set(services)].sort()) {
       const pack = TEMPLATE_PACKS[service]
       if (!pack) continue
-      const path = notes.find((note) => templateId(note.content) === pack.id)?.path || this.dashboardPath(pack)
+      const moved = notes.find((note) => templateId(note.content) === pack.id)?.path
+      const path = moved ? safeVaultWritePath(moved) : this.dashboardPath(pack)
       const generated = renderDashboard(pack, this.settings.serviceViews[service] || {})
       const existing = await this.vault.read(path)
       if (existing === null) {
@@ -49,9 +51,9 @@ export class TemplateManager {
   }
 
   dashboardPath(pack: TemplatePackV1): string {
-    const configured = String(this.settings.serviceFolders[pack.service] || "").replace(/^\/+|\/+$/g, "")
-    const serviceRoot = configured || `services/${pack.service}`
-    return [this.settings.vaultRoot, serviceRoot, "首页.md"].filter(Boolean).join("/").replace(/\/+/g, "/")
+    const vaultRoot = safeConfiguredPath(this.settings.vaultRoot, "NotionHub")
+    const serviceRoot = safeConfiguredPath(String(this.settings.serviceFolders[pack.service] || ""), `services/${pack.service}`)
+    return joinVaultPath(vaultRoot, serviceRoot, "首页.md")
   }
 }
 

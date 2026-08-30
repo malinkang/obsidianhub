@@ -2,6 +2,7 @@
   "name": "obsidianhub",
   "version": "0.1.0",
   "private": true,
+  "license": "MIT",
   "description": "Mobile-compatible pull-only NotionHub sync plugin for Obsidian",
   "scripts": {
     "build": "node esbuild.config.mjs production",
@@ -15,7 +16,7 @@
     "builtin-modules": "^4.0.0",
     "esbuild": "^0.25.0",
     "happy-dom": "^20.11.15",
-    "obsidian": "^1.8.0",
+    "obsidian": "^1.11.4",
     "tsx": "^4.20.0",
     "typescript": "^5.7.0"
   }

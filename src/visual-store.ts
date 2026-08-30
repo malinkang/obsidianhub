@@ -1,4 +1,5 @@
 import type { PluginSettings, ServiceAnalytics, ServiceCatalog } from "./types"
+import { joinVaultPath, safeConfiguredPath } from "./path-policy"
 
 export type VisualVault = { read(path: string): Promise<string | null> }
 
@@ -30,7 +31,7 @@ export class VisualDataStore {
   }
 
   private async load<T extends { schemaVersion: number; service: string }>(relative: string, service: string): Promise<T | null> {
-    const path = `${this.settings.vaultRoot}/${relative}`.replace(/\/+/g, "/")
+    const path = joinVaultPath(safeConfiguredPath(this.settings.vaultRoot, "NotionHub"), relative)
     const raw = await this.vault.read(path)
     if (raw === null) return null
     const value = JSON.parse(raw) as T

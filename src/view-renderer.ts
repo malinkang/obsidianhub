@@ -1,4 +1,5 @@
 import { TEMPLATE_PACKS } from "./templates"
+import { safeExternalUrl } from "./network-policy"
 import type { AnalyticsPoint, AnalyticsSeries, CatalogEntry, ServiceAnalytics, ServiceCatalog, ViewSpecV1, ViewType } from "./types"
 
 const VIEW_TYPES = new Set<ViewType>(["gallery", "heatmap", "kpi", "line", "bar", "stacked-bar", "area", "donut"])
@@ -104,6 +105,7 @@ function renderGallery(container: HTMLElement, entries: CatalogEntry[], openPath
       if (imageUrl) {
         const image = document.createElement("img")
         image.loading = "lazy"
+        image.referrerPolicy = "no-referrer"
         image.alt = ""
         image.src = imageUrl
         image.addEventListener("error", () => image.remove())
@@ -334,10 +336,8 @@ function renderEmpty(container: HTMLElement, text: string): void {
 
 function firstMedia(entry: CatalogEntry): string {
   for (const value of [...(entry.view?.media?.cover || []), ...(entry.view?.media?.gallery || [])]) {
-    try {
-      const url = new URL(value)
-      if (url.protocol === "https:" || url.protocol === "http:") return url.toString()
-    } catch { /* ignore unsafe or malformed media URL */ }
+    const url = safeExternalUrl(value)
+    if (url) return url
   }
   return ""
 }

@@ -10,11 +10,13 @@ import {
 } from "obsidian"
 
 import { NotionHubApi } from "./api"
+import { migrateLegacyCredentials, persistCredentials, runtimeCredentials } from "./credential-store"
 import { identityFromFrontmatter } from "./markdown"
+import { safeVaultWritePath } from "./path-policy"
 import { SyncEngine, type VaultAdapter, type VaultNote } from "./sync-engine"
 import { TemplateManager } from "./template-manager"
 import { TEMPLATE_PACKS } from "./templates"
-import { DEFAULT_SETTINGS, type DeviceCredentials, type PluginSettings, type SyncProgress } from "./types"
+import { DEFAULT_SETTINGS, type PluginSettings, type SyncProgress } from "./types"
 import { parseViewSpec, renderView } from "./view-renderer"
 import { VisualDataStore } from "./visual-store"
 
@@ -27,7 +29,10 @@ export default class NotionHubPlugin extends Plugin {
   private visualStore!: VisualDataStore
 
   async onload(): Promise<void> {
-    this.settings = { ...DEFAULT_SETTINGS, ...(await this.loadData() as Partial<PluginSettings> | null || {}) }
+    const loaded = await this.loadData() as (Partial<PluginSettings> & { credentials?: unknown }) | null
+    const migrated = migrateLegacyCredentials(loaded?.credentials, this.app.secretStorage)
+    this.settings = { ...DEFAULT_SETTINGS, ...(loaded || {}), credentials: migrated.connection }
+    if (migrated.migrated) await this.saveData(this.settings)
     this.vaultAdapter = new ObsidianVaultAdapter(this.app)
     this.visualStore = new VisualDataStore(this.vaultAdapter, this.settings)
     this.addSettingTab(new NotionHubSettingTab(this.app, this))
@@ -55,7 +60,7 @@ export default class NotionHubPlugin extends Plugin {
     })
     this.configureInterval()
     this.app.workspace.onLayoutReady(() => {
-      if (this.settings.syncOnStartup && this.settings.credentials) void this.sync()
+      if (this.settings.syncOnStartup && this.hasConnection()) void this.sync()
     })
     this.updateStatus({ phase: "idle", completed: 0, total: 0, message: "NotionHub 就绪" })
   }
@@ -73,8 +78,8 @@ export default class NotionHubPlugin extends Plugin {
   }
 
   api(): NotionHubApi {
-    return new NotionHubApi(this.settings.integrationBaseUrl, this.settings.credentials, async (credentials) => {
-      await this.saveSettings({ credentials })
+    return new NotionHubApi(this.settings.integrationBaseUrl, runtimeCredentials(this.settings.credentials, this.app.secretStorage), async (credentials) => {
+      await this.saveSettings({ credentials: persistCredentials(credentials, this.app.secretStorage) })
     })
   }
 
@@ -83,7 +88,7 @@ export default class NotionHubPlugin extends Plugin {
       new Notice("NotionHub 正在同步中。")
       return
     }
-    if (!this.settings.credentials) {
+    if (!this.hasConnection()) {
       new Notice("请先在 NotionHub 设置中连接设备。")
       return
     }
@@ -112,6 +117,10 @@ export default class NotionHubPlugin extends Plugin {
 
   cancelSync(): void {
     this.abortController?.abort()
+  }
+
+  hasConnection(): boolean {
+    return runtimeCredentials(this.settings.credentials, this.app.secretStorage) !== null
   }
 
   async restoreTemplates(): Promise<void> {
@@ -150,12 +159,12 @@ class ObsidianVaultAdapter implements VaultAdapter {
   }
 
   async read(path: string): Promise<string | null> {
-    const file = this.app.vault.getAbstractFileByPath(normalizePath(path))
+    const file = this.app.vault.getAbstractFileByPath(normalizePath(safeVaultWritePath(path)))
     return file instanceof TFile ? this.app.vault.cachedRead(file) : null
   }
 
   async writeAtomic(path: string, content: string): Promise<void> {
-    const normalized = normalizePath(path)
+    const normalized = normalizePath(safeVaultWritePath(path))
     await this.ensureFolders(normalized)
     const file = this.app.vault.getAbstractFileByPath(normalized)
     if (file instanceof TFile) {
@@ -170,12 +179,12 @@ class ObsidianVaultAdapter implements VaultAdapter {
   }
 
   async remove(path: string): Promise<void> {
-    const file = this.app.vault.getAbstractFileByPath(normalizePath(path))
+    const file = this.app.vault.getAbstractFileByPath(normalizePath(safeVaultWritePath(path)))
     if (file instanceof TFile) await this.app.vault.delete(file)
   }
 
   async writeBinary(path: string, content: ArrayBuffer): Promise<void> {
-    const normalized = normalizePath(path)
+    const normalized = normalizePath(safeVaultWritePath(path))
     await this.ensureFolders(normalized)
     const file = this.app.vault.getAbstractFileByPath(normalized)
     if (file instanceof TFile) await this.app.vault.modifyBinary(file, content)
@@ -201,7 +210,7 @@ class DeviceModal extends Modal {
     const { contentEl } = this
     contentEl.empty()
     contentEl.createEl("h2", { text: "连接 NotionHub" })
-    const device = await this.plugin.api().startDevice(`${this.app.vault.getName()} Vault`)
+    const device = await this.plugin.api().startDevice("Obsidian device")
     contentEl.createEl("p", { text: `授权码：${device.userCode}` })
     const button = contentEl.createEl("button", { text: "打开授权页面" })
     button.onclick = () => window.open(`${device.verificationUri}?user_code=${encodeURIComponent(device.userCode)}`, "_blank")
@@ -234,9 +243,10 @@ class NotionHubSettingTab extends PluginSettingTab {
   display(): void {
     const { containerEl } = this
     containerEl.empty()
-    new Setting(containerEl).setName("设备连接").setDesc(this.plugin.settings.credentials ? "已连接；仓库令牌仅在同步时短期获取。" : "使用浏览器确认设备授权。")
-      .addButton((button) => button.setButtonText(this.plugin.settings.credentials ? "重新连接" : "连接").onClick(() => new DeviceModal(this.app, this.plugin).open()))
-      .addButton((button) => button.setButtonText("断开").setDisabled(!this.plugin.settings.credentials).onClick(async () => { await this.plugin.api().revoke(); this.display() }))
+    const connected = this.plugin.hasConnection()
+    new Setting(containerEl).setName("设备连接").setDesc(connected ? "已连接；刷新凭据由 Obsidian SecretStorage 保存，仓库令牌仅在同步时短期获取。" : "使用浏览器确认设备授权。")
+      .addButton((button) => button.setButtonText(connected ? "重新连接" : "连接").onClick(() => new DeviceModal(this.app, this.plugin).open()))
+      .addButton((button) => button.setButtonText("断开").setDisabled(!connected).onClick(async () => { await this.plugin.api().revoke(); this.display() }))
     new Setting(containerEl).setName("Vault 根目录").setDesc("生成内容写入此目录。")
       .addText((text) => text.setValue(this.plugin.settings.vaultRoot).onChange(async (value) => this.plugin.saveSettings({ vaultRoot: value.trim() || "NotionHub" })))
     new Setting(containerEl).setName("启动时同步").addToggle((toggle) => toggle.setValue(this.plugin.settings.syncOnStartup).onChange(async (value) => this.plugin.saveSettings({ syncOnStartup: value })))

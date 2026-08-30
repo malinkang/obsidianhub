@@ -3,6 +3,8 @@ import { archiveManagedMarkdown, entityKey, mergeManagedMarkdown, sha256Hex, typ
 import { TemplateManager } from "./template-manager"
 import { materializeDetailLayout } from "./detail-template"
 import { TEMPLATE_PACKS } from "./templates"
+import { MAX_CACHED_IMAGE_BYTES, safeExternalUrl } from "./network-policy"
+import { joinVaultPath, safeConfiguredPath, safeRelativePath, safeVaultWritePath } from "./path-policy"
 import type { ManifestArtifact, ManifestEntry, PluginSettings, SyncProgress, SyncSummary, VaultManifest } from "./types"
 
 export type VaultNote = { path: string; content: string; identity: EntityIdentity | null }
@@ -35,8 +37,10 @@ export class SyncEngine {
     const remote = await reader.manifest(commitSha, this.settings.lastManifestEtag, signal)
     const manifest = remote.manifest || this.settings.lastManifest
     if (!manifest) throw new Error("仓库 manifest 不可用")
+    validateManifestPaths(manifest)
 
     const previous = this.settings.lastManifest || emptyManifest()
+    validateManifestPaths(previous)
     const changed = remote.unchanged ? [] : changedEntries(previous, manifest)
     const deleted = remote.unchanged ? [] : deletedEntries(previous, manifest)
     const notes = await this.vault.notes()
@@ -112,7 +116,7 @@ export class SyncEngine {
     for (const [current, before] of groups) {
       for (const [service, artifact] of Object.entries(current)) {
         this.assertActive(signal)
-        const target = `${this.settings.vaultRoot}/${artifact.path}`.replace(/\/+/g, "/")
+        const target = joinVaultPath(safeConfiguredPath(this.settings.vaultRoot, "NotionHub"), artifact.path)
         const local = await this.vault.read(target)
         if (before[service]?.contentHash === artifact.contentHash && local !== null && await sha256Hex(local) === artifact.contentHash) continue
         const content = await reader.file(artifact.path, commitSha, signal)
@@ -132,10 +136,11 @@ export class SyncEngine {
   }
 
   private targetPath(entry: ManifestEntry): string {
-    const configured = String(this.settings.serviceFolders[entry.service] || "").replace(/^\/+|\/+$/g, "")
-    const relative = entry.path.replace(new RegExp(`^services/${escapeRegExp(entry.service)}/`), "")
-    const serviceRoot = configured || `services/${entry.service}`
-    return [this.settings.vaultRoot, serviceRoot, relative].filter(Boolean).join("/").replace(/\/+/g, "/")
+    const prefix = `services/${entry.service}/`
+    const relative = safeRelativePath(entry.path.slice(prefix.length))
+    const vaultRoot = safeConfiguredPath(this.settings.vaultRoot, "NotionHub")
+    const serviceRoot = safeConfiguredPath(String(this.settings.serviceFolders[entry.service] || ""), `services/${entry.service}`)
+    return joinVaultPath(vaultRoot, serviceRoot, relative)
   }
 
   private assertActive(signal?: AbortSignal): void {
@@ -159,15 +164,20 @@ export async function cacheExternalImages(
   let output = markdown
   for (const match of matches) {
     try {
-      const url = match[2]!
+      const url = safeExternalUrl(match[2]!)
+      if (!url) continue
       const response = await fetcher(url, { signal })
       if (!response.ok) continue
       const contentType = response.headers.get("Content-Type") || ""
-      if (!contentType.startsWith("image/")) continue
-      const extension = imageExtension(contentType, url)
+      const extension = imageExtension(contentType)
+      if (!extension || (response.url && !safeExternalUrl(response.url))) continue
+      const declaredSize = Number(response.headers.get("Content-Length") || "0")
+      if (declaredSize > MAX_CACHED_IMAGE_BYTES) continue
+      const content = await response.arrayBuffer()
+      if (content.byteLength > MAX_CACHED_IMAGE_BYTES) continue
       const assetId = (await sha256Hex(url)).slice(0, 20)
-      const path = [vaultRoot, "assets", entry.service, `${assetId}.${extension}`].filter(Boolean).join("/")
-      await vault.writeBinary(path, await response.arrayBuffer())
+      const path = joinVaultPath(safeConfiguredPath(vaultRoot, "NotionHub"), "assets", safeRelativePath(entry.service), `${assetId}.${extension}`)
+      await vault.writeBinary(path, content)
       output = output.replace(match[0], `![[${path}|${match[1] || "image"}]]`)
     } catch (error) {
       if (signal?.aborted) throw error
@@ -199,13 +209,27 @@ function emptyManifest(): VaultManifest {
   return { schemaVersion: 1, entries: {} }
 }
 
-function escapeRegExp(value: string): string {
-  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+function validateManifestPaths(manifest: VaultManifest): void {
+  for (const entry of Object.values(manifest.entries)) {
+    if (!TEMPLATE_PACKS[entry.service]) throw new Error(`manifest 包含未知服务：${entry.service}`)
+    const prefix = `services/${entry.service}/`
+    if (!entry.path.startsWith(prefix)) throw new Error(`manifest 条目路径与服务不匹配：${entry.path}`)
+    safeRelativePath(entry.path.slice(prefix.length))
+  }
+  validateArtifacts(manifest.catalogs || {}, "catalog")
+  validateArtifacts(manifest.analytics || {}, "analytics")
 }
 
-function imageExtension(contentType: string, url: string): string {
+function validateArtifacts(artifacts: Record<string, ManifestArtifact>, kind: "catalog" | "analytics"): void {
+  for (const [service, artifact] of Object.entries(artifacts)) {
+    if (!TEMPLATE_PACKS[service]) throw new Error(`manifest 包含未知服务：${service}`)
+    const expected = `.notionhub/${kind}/${service}.json`
+    if (artifact.path !== expected) throw new Error(`manifest 可视化路径无效：${artifact.path}`)
+    safeVaultWritePath(artifact.path)
+  }
+}
+
+function imageExtension(contentType: string): string {
   const subtype = contentType.split("/", 2)[1]?.split(";", 1)[0]?.toLowerCase()
-  if (subtype === "jpeg") return "jpg"
-  if (subtype && /^[a-z0-9.+-]+$/.test(subtype)) return subtype.replace("svg+xml", "svg")
-  return url.match(/\.([a-z0-9]{2,5})(?:\?|$)/i)?.[1]?.toLowerCase() || "img"
+  return ({ jpeg: "jpg", png: "png", gif: "gif", webp: "webp", avif: "avif" } as Record<string, string>)[subtype || ""] || ""
 }

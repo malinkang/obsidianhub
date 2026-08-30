@@ -112,9 +112,13 @@ export type DeviceCredentials = {
   refreshExpiresAt: string
 }
 
+export type StoredDeviceConnection = {
+  refreshExpiresAt: string
+}
+
 export type PluginSettings = {
   integrationBaseUrl: string
-  credentials: DeviceCredentials | null
+  credentials: StoredDeviceConnection | null
   syncOnStartup: boolean
   intervalMinutes: number
   vaultRoot: string
