@@ -7,6 +7,7 @@ import {
   Setting,
   TFile,
   normalizePath,
+  requestUrl,
 } from "obsidian"
 
 import { NotionHubApi } from "./api"
@@ -91,7 +92,7 @@ export default class NotionHubPlugin extends Plugin {
   api(): NotionHubApi {
     return new NotionHubApi(this.settings.integrationBaseUrl, runtimeCredentials(this.settings.credentials, this.app.secretStorage), async (credentials) => {
       await this.saveSettings({ credentials: persistCredentials(credentials, this.app.secretStorage) })
-    })
+    }, obsidianFetch)
   }
 
   async sync(): Promise<void> {
@@ -248,12 +249,29 @@ class DeviceModal extends Modal {
   private active = false
   constructor(app: App, private readonly plugin: NotionHubPlugin) { super(app) }
 
-  async onOpen(): Promise<void> {
+  onOpen(): void {
     this.active = true
+    void this.renderDeviceFlow()
+  }
+
+  private async renderDeviceFlow(): Promise<void> {
     const { contentEl } = this
     contentEl.empty()
     contentEl.createEl("h2", { text: "连接 NotionHub" })
-    const device = await this.plugin.api().startDevice("Obsidian device")
+    const loading = contentEl.createEl("p", { text: "正在获取设备授权码…" })
+    let device
+    try {
+      device = await this.plugin.api().startDevice("Obsidian device")
+    } catch (error) {
+      if (!this.active) return
+      loading.setText(error instanceof Error ? error.message : "无法连接 NotionHub")
+      contentEl.createEl("p", { text: "请检查网络连接后重试；如果问题持续出现，可能是设备授权服务尚未开放。" })
+      const retry = contentEl.createEl("button", { text: "重试" })
+      retry.onclick = () => void this.renderDeviceFlow()
+      return
+    }
+    if (!this.active) return
+    loading.remove()
     contentEl.createEl("p", { text: `授权码：${device.userCode}` })
     const button = contentEl.createEl("button", { text: "打开授权页面" })
     button.onclick = () => window.open(`${device.verificationUri}?user_code=${encodeURIComponent(device.userCode)}`, "_blank")
@@ -317,4 +335,19 @@ class NotionHubSettingTab extends PluginSettingTab {
 
 function delay(milliseconds: number): Promise<void> {
   return new Promise((resolve) => window.setTimeout(resolve, milliseconds))
+}
+
+async function obsidianFetch(input: RequestInfo | URL, init: RequestInit = {}): Promise<Response> {
+  const url = input instanceof Request ? input.url : String(input)
+  const response = await requestUrl({
+    url,
+    method: init.method,
+    headers: Object.fromEntries(new Headers(init.headers).entries()),
+    body: typeof init.body === "string" ? init.body : undefined,
+    throw: false,
+  })
+  return new Response(response.arrayBuffer, {
+    status: response.status,
+    headers: response.headers,
+  })
 }
