@@ -1,0 +1,10 @@
+{
+  "id": "notionhub",
+  "name": "NotionHub",
+  "version": "0.1.0",
+  "minAppVersion": "1.5.0",
+  "description": "Pull NotionHub service data into an Obsidian vault while preserving handwritten content.",
+  "author": "malinkang",
+  "authorUrl": "https://www.notionhub.app",
+  "isDesktopOnly": false
+}

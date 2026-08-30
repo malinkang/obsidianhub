@@ -1,0 +1,171 @@
+import { GithubRepositoryReader, NotionHubApi } from "./api"
+import { archiveManagedMarkdown, entityKey, mergeManagedMarkdown, sha256Hex, type EntityIdentity } from "./markdown"
+import type { ManifestEntry, PluginSettings, SyncProgress, SyncSummary, VaultManifest } from "./types"
+
+export type VaultNote = { path: string; content: string; identity: EntityIdentity | null }
+
+export interface VaultAdapter {
+  notes(): Promise<VaultNote[]>
+  read(path: string): Promise<string | null>
+  writeAtomic(path: string, content: string): Promise<void>
+  remove(path: string): Promise<void>
+  writeBinary?(path: string, content: ArrayBuffer): Promise<void>
+}
+
+export class SyncEngine {
+  constructor(
+    private readonly api: NotionHubApi,
+    private readonly vault: VaultAdapter,
+    private settings: PluginSettings,
+    private readonly saveSettings: (patch: Partial<PluginSettings>) => Promise<void>,
+    private readonly progress: (progress: SyncProgress) => void,
+    private readonly readerFactory = (repository: Awaited<ReturnType<NotionHubApi["repositoryToken"]>>["repository"], token: string) => new GithubRepositoryReader(repository, token),
+    private readonly assetFetcher: typeof fetch = fetch,
+  ) {}
+
+  async run(signal?: AbortSignal): Promise<SyncSummary> {
+    this.progress({ phase: "fetching", completed: 0, total: 0, message: "正在读取私有仓库" })
+    this.assertActive(signal)
+    const credential = await this.api.repositoryToken()
+    const reader = this.readerFactory(credential.repository, credential.token)
+    const commitSha = await reader.headCommit(signal)
+    const remote = await reader.manifest(commitSha, this.settings.lastManifestEtag, signal)
+    if (remote.unchanged && this.settings.lastManifest) {
+      return { commitSha, created: 0, updated: 0, deleted: 0, skipped: Object.keys(this.settings.lastManifest.entries).length }
+    }
+    if (!remote.manifest) throw new Error("仓库 manifest 不可用")
+
+    const previous = this.settings.lastManifest || emptyManifest()
+    const changed = changedEntries(previous, remote.manifest)
+    const deleted = deletedEntries(previous, remote.manifest)
+    const notes = await this.vault.notes()
+    const byEntity = new Map(notes.flatMap((note) => note.identity ? [[entityKey(note.identity), note] as const] : []))
+    let created = 0
+    let updated = 0
+    let removed = 0
+    let skipped = Object.keys(remote.manifest.entries).length - changed.length
+    const total = changed.length + deleted.length
+    let completed = 0
+
+    for (const entry of changed) {
+      this.assertActive(signal)
+      this.progress({ phase: "applying", completed, total, message: `${entry.service}: ${entry.entityId}` })
+      if (entry.tombstone) {
+        removed += await this.archive(byEntity.get(entryKey(entry)))
+      } else {
+        const remoteContent = await reader.file(entry.path, commitSha, signal)
+        const digest = await sha256Hex(remoteContent)
+        if (digest !== entry.contentHash) throw new Error(`${entry.path} 内容校验失败`)
+        const existing = byEntity.get(entryKey(entry))
+        const target = existing?.path || this.targetPath(entry)
+        const local = existing?.content ?? await this.vault.read(target)
+        const materialized = this.settings.downloadImages
+          ? await cacheExternalImages(remoteContent, entry, this.settings.vaultRoot, this.vault, this.assetFetcher, signal)
+          : remoteContent
+        await this.vault.writeAtomic(target, mergeManagedMarkdown(local, materialized))
+        if (existing || local !== null) updated += 1
+        else created += 1
+      }
+      completed += 1
+    }
+
+    for (const entry of deleted) {
+      this.assertActive(signal)
+      this.progress({ phase: "applying", completed, total, message: `归档 ${entry.service}: ${entry.entityId}` })
+      removed += await this.archive(byEntity.get(entryKey(entry)))
+      completed += 1
+    }
+
+    await this.saveSettings({ lastCommitSha: commitSha, lastManifestEtag: remote.etag, lastManifest: remote.manifest })
+    this.settings = { ...this.settings, lastCommitSha: commitSha, lastManifestEtag: remote.etag, lastManifest: remote.manifest }
+    const summary = { commitSha, created, updated, deleted: removed, skipped }
+    this.progress({ phase: "complete", completed: total, total, message: `新增 ${created}，更新 ${updated}，归档 ${removed}` })
+    return summary
+  }
+
+  private async archive(note: VaultNote | undefined): Promise<number> {
+    if (!note) return 0
+    const archived = archiveManagedMarkdown(note.content)
+    if (archived.pureManaged) await this.vault.remove(note.path)
+    else await this.vault.writeAtomic(note.path, archived.content)
+    return 1
+  }
+
+  private targetPath(entry: ManifestEntry): string {
+    const configured = String(this.settings.serviceFolders[entry.service] || "").replace(/^\/+|\/+$/g, "")
+    const relative = entry.path.replace(new RegExp(`^services/${escapeRegExp(entry.service)}/`), "")
+    const serviceRoot = configured || `services/${entry.service}`
+    return [this.settings.vaultRoot, serviceRoot, relative].filter(Boolean).join("/").replace(/\/+/g, "/")
+  }
+
+  private assertActive(signal?: AbortSignal): void {
+    if (signal?.aborted) {
+      this.progress({ phase: "cancelled", completed: 0, total: 0, message: "同步已取消" })
+      throw new DOMException("Sync cancelled", "AbortError")
+    }
+  }
+}
+
+export async function cacheExternalImages(
+  markdown: string,
+  entry: ManifestEntry,
+  vaultRoot: string,
+  vault: VaultAdapter,
+  fetcher: typeof fetch,
+  signal?: AbortSignal,
+): Promise<string> {
+  if (!vault.writeBinary) return markdown
+  const matches = [...markdown.matchAll(/!\[([^\]]*)\]\((https?:\/\/[^)\s]+)\)/g)]
+  let output = markdown
+  for (const match of matches) {
+    try {
+      const url = match[2]!
+      const response = await fetcher(url, { signal })
+      if (!response.ok) continue
+      const contentType = response.headers.get("Content-Type") || ""
+      if (!contentType.startsWith("image/")) continue
+      const extension = imageExtension(contentType, url)
+      const assetId = (await sha256Hex(url)).slice(0, 20)
+      const path = [vaultRoot, "assets", entry.service, `${assetId}.${extension}`].filter(Boolean).join("/")
+      await vault.writeBinary(path, await response.arrayBuffer())
+      output = output.replace(match[0], `![[${path}|${match[1] || "image"}]]`)
+    } catch (error) {
+      if (signal?.aborted) throw error
+      // Images are auxiliary: preserve the original external URL when a download fails.
+    }
+  }
+  return output
+}
+
+function changedEntries(previous: VaultManifest, current: VaultManifest): ManifestEntry[] {
+  return Object.entries(current.entries)
+    .filter(([key, value]) => previous.entries[key]?.contentHash !== value.contentHash || previous.entries[key]?.tombstone !== value.tombstone)
+    .map(([, value]) => value)
+    .sort((left, right) => entryKey(left).localeCompare(entryKey(right)))
+}
+
+function deletedEntries(previous: VaultManifest, current: VaultManifest): ManifestEntry[] {
+  return Object.entries(previous.entries)
+    .filter(([key]) => !current.entries[key])
+    .map(([, value]) => value)
+    .sort((left, right) => entryKey(left).localeCompare(entryKey(right)))
+}
+
+function entryKey(entry: ManifestEntry): string {
+  return `${entry.service}:${entry.entityType}:${entry.entityId}`
+}
+
+function emptyManifest(): VaultManifest {
+  return { schemaVersion: 1, entries: {} }
+}
+
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+}
+
+function imageExtension(contentType: string, url: string): string {
+  const subtype = contentType.split("/", 2)[1]?.split(";", 1)[0]?.toLowerCase()
+  if (subtype === "jpeg") return "jpg"
+  if (subtype && /^[a-z0-9.+-]+$/.test(subtype)) return subtype.replace("svg+xml", "svg")
+  return url.match(/\.([a-z0-9]{2,5})(?:\?|$)/i)?.[1]?.toLowerCase() || "img"
+}
