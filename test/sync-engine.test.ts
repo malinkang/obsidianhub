@@ -126,11 +126,11 @@ test("image caching blocks private, insecure, oversized and active image content
   assert.equal(vault.binaries.size, 0)
 })
 
-test("all 22 service namespaces are consumed atomically from one manifest", async () => {
+test("all 24 service namespaces are consumed atomically from one manifest", async () => {
   const services = [
     "weread", "podcast", "douban", "keep", "dida", "flomo", "duolingo", "bbdc",
     "bilibili", "neteasemusic", "forest", "toggl", "applemusic", "strava", "trakt",
-    "youtube", "spotify", "xiaohongshu", "douyin", "github", "guwendao", "daily",
+    "youtube", "spotify", "xiaohongshu", "douyin", "weibo", "github", "guwendao", "jike", "daily",
   ]
   const vault = new MemoryVault()
   const reader = new Reader()
@@ -157,6 +157,46 @@ test("all 22 service namespaces are consumed atomically from one manifest", asyn
     assert.match(detail, /notionhub-detail-template-start/, `${service} detail template`)
     assert.ok(vault.files.has(`NotionHub/services/${service}/首页.md`), `${service} template`)
   }
+})
+
+test("Jike and Weibo namespaces are accepted while undeclared services remain rejected", async () => {
+  for (const [service, entityType] of [["jike", "posts"], ["weibo", "weibo"]] as const) {
+    const vault = new MemoryVault()
+    const reader = new Reader()
+    const content = serviceNote(service, entityType)
+    const path = `services/${service}/${entityType}/${service}-1.md`
+    reader.files.set(path, content)
+    reader.manifestValue = {
+      schemaVersion: 1,
+      entries: {
+        [`${service}:${entityType}:${service}-1`]: {
+          service, entityType, entityId: `${service}-1`, path,
+          contentHash: await sha256Hex(content), updatedAt: "2026-08-29T00:00:00Z",
+        },
+      },
+    }
+    const engine = new SyncEngine(reader, vault, { ...DEFAULT_SETTINGS }, async () => {}, () => {})
+    assert.equal((await engine.run()).created, 1)
+    assert.ok(vault.files.has(`NotionHub/services/${service}/${entityType}/${service}-1.md`))
+  }
+
+  const vault = new MemoryVault()
+  const reader = new Reader()
+  const content = serviceNote("unknown", "posts")
+  const path = "services/unknown/posts/unknown-1.md"
+  reader.files.set(path, content)
+  reader.manifestValue = {
+    schemaVersion: 1,
+    entries: {
+      "unknown:posts:unknown-1": {
+        service: "unknown", entityType: "posts", entityId: "unknown-1", path,
+        contentHash: await sha256Hex(content), updatedAt: "2026-08-29T00:00:00Z",
+      },
+    },
+  }
+  const engine = new SyncEngine(reader, vault, { ...DEFAULT_SETTINGS }, async () => {}, () => {})
+  await assert.rejects(engine.run(), /manifest 包含未知服务：unknown/)
+  assert.equal(vault.files.size, 0)
 })
 
 test("large initial sync uses bounded Worker batches instead of one request per note", async () => {

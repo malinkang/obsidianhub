@@ -13,8 +13,13 @@ class Vault {
   notes() { return Promise.resolve([...this.files].map(([path, content]) => ({ path, content }))) }
 }
 
-test("template registry atomically covers 22 services and all native view types", () => {
-  assert.equal(Object.keys(TEMPLATE_PACKS).length, 22)
+test("template registry atomically covers 24 services and all native view types", () => {
+  assert.equal(Object.keys(TEMPLATE_PACKS).length, 24)
+  assert.deepEqual(Object.keys(TEMPLATE_PACKS).sort(), [
+    "applemusic", "bbdc", "bilibili", "daily", "dida", "douban", "douyin", "duolingo",
+    "flomo", "forest", "github", "guwendao", "jike", "keep", "neteasemusic", "podcast",
+    "spotify", "strava", "toggl", "trakt", "weibo", "weread", "xiaohongshu", "youtube",
+  ])
   assert.deepEqual(validateTemplateRegistry(), [])
   const types = new Set(Object.values(TEMPLATE_PACKS).flatMap((pack) => pack.views.map((view) => view.type)))
   assert.deepEqual([...types].sort(), ["area", "bar", "donut", "gallery", "heatmap", "kpi", "line", "stacked-bar"].sort())
@@ -65,9 +70,9 @@ test("automatic installation writes all requested service templates deterministi
   const manager = new TemplateManager(vault, { ...DEFAULT_SETTINGS })
   const first = await manager.ensure(Object.keys(TEMPLATE_PACKS))
   const second = await manager.ensure(Object.keys(TEMPLATE_PACKS))
-  assert.equal(first.created, 22)
-  assert.equal(second.skipped, 22)
-  assert.equal(vault.files.size, 22)
+  assert.equal(first.created, 24)
+  assert.equal(second.skipped, 24)
+  assert.equal(vault.files.size, 24)
 })
 
 test("template upgrades follow a user-moved dashboard instead of recreating the old path", async () => {

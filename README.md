@@ -38,7 +38,7 @@ For a local manual install, copy `manifest.json`, the generated `main.js`, and `
 
 ## Native service templates
 
-The plugin ships one curated dashboard and entity-detail layout for every NotionHub Runner service. The 22 packs are installed or safely upgraded under `NotionHub/services/<service>/` during sync. Official managed regions are replaced on upgrade; custom frontmatter and handwritten content outside those regions remain untouched. A malformed or removed managed anchor creates a conflict copy instead of overwriting the note.
+The plugin ships one curated dashboard and entity-detail layout for every NotionHub Runner service. The 24 packs are installed or safely upgraded under `NotionHub/services/<service>/` during sync. Official managed regions are replaced on upgrade; custom frontmatter and handwritten content outside those regions remain untouched. A malformed or removed managed anchor creates a conflict copy instead of overwriting the note.
 
 Supported native views are Gallery, KPI, calendar heatmap, line, bar, stacked bar, area, and donut. They are rendered by the plugin from versioned catalog and analytics JSON; no Dataview, Tracker, Charts, Heatmap Calendar, Templater, or other community plugin is required. The Markdown headings, links, callouts, and entity bodies remain readable when ObsidianHub is disabled.
 

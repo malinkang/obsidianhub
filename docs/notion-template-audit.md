@@ -23,8 +23,10 @@ This audit was completed read-only against the current NotionHub source-template
 | Spotify | Legacy Notion music template plus the same artist/playlist/song/album service contract | Music Gallery, favorite heatmap/trend, artist distribution |
 | Xiaohongshu | All/year/month/week/day, tags, authors, files, notes | Note Gallery, favorite heatmap, author/tag analysis |
 | Douyin | All/year/month/week/day, collections, authors, videos, resources | Video/image Gallery, engagement bars, author distribution |
+| Weibo | Statuses, tags, resources, daily/weekly/monthly/yearly/all views | Status Gallery, publishing/favorite heatmap, engagement and source analysis |
 | GitHub | All/year/month/week/day, category, author, repositories | Repository Gallery, star heatmap, star/fork ranking, language donut |
 | Guwendao | Authors, tags, poems, favorites, poem lists, annotations, recitation | Poem Gallery, favorite/recitation heatmap, author/tag analysis |
+| Jike | Posts, tags, resources, daily/weekly/monthly/yearly/all views | Post Gallery, publishing heatmap, engagement and post-type analysis |
 | Daily | Category, tags, yearly views, journals | Daily KPIs, journal heatmap, photo Gallery, activity stack and life trend |
 
 The Notion source pages remain the design reference rather than a runtime dependency. No Notion page IDs, database IDs, signed asset URLs, or workspace credentials are embedded in the plugin repository.
