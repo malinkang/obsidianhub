@@ -5,6 +5,8 @@ export type ManifestEntry = {
   path: string
   contentHash: string
   updatedAt: string
+  title?: string
+  view?: VisualMetadata
   tombstone?: boolean
 }
 export type VaultManifest = {
@@ -12,6 +14,86 @@ export type VaultManifest = {
   sourceRevision?: string
   generatedAt?: string | null
   entries: Record<string, ManifestEntry>
+  catalogs?: Record<string, ManifestArtifact>
+  analytics?: Record<string, ManifestArtifact>
+}
+
+export type ManifestArtifact = {
+  path: string
+  contentHash: string
+  schemaVersion: number
+}
+
+export type VisualMetadata = {
+  schemaVersion: number
+  dates: Record<string, string>
+  dimensions: Record<string, string | string[] | boolean>
+  measures: Record<string, number>
+  media: Record<string, string[]>
+}
+
+export type CatalogEntry = {
+  key: string
+  entityType: string
+  entityId: string
+  title: string
+  path: string
+  updatedAt: string
+  view: VisualMetadata
+}
+
+export type ServiceCatalog = {
+  schemaVersion: number
+  service: string
+  label: string
+  icon: string
+  color: string
+  primaryEntities: string[]
+  generatedAt?: string
+  entries: CatalogEntry[]
+}
+
+export type AnalyticsPoint = { key: string; value: number; series?: string }
+export type AnalyticsSeries = {
+  key: string
+  kind: "kpi" | "heatmap" | "category" | "timeSeries"
+  label: string
+  unit: string
+  points: AnalyticsPoint[]
+}
+export type ServiceAnalytics = {
+  schemaVersion: number
+  service: string
+  generatedAt?: string
+  series: AnalyticsSeries[]
+  reported?: Record<string, unknown>
+}
+
+export type ViewType = "gallery" | "heatmap" | "kpi" | "line" | "bar" | "stacked-bar" | "area" | "donut"
+export type ViewSpecV1 = {
+  schemaVersion: 1
+  id?: string
+  title?: string
+  type: ViewType
+  service: string
+  entityType?: string
+  seriesKey?: string
+  seriesKeys?: string[]
+  dateField?: string
+  measure?: string
+  groupBy?: string
+  range?: "30d" | "90d" | "365d" | "all"
+  sort?: "newest" | "oldest" | "title"
+  limit?: number
+  color?: string
+}
+
+export type ServiceViewSettings = {
+  range: "30d" | "90d" | "365d" | "all"
+  sort: "newest" | "oldest" | "title"
+  color: string
+  groupBy: string
+  hiddenViews: string[]
 }
 
 export type RepositoryStatus = {
@@ -41,6 +123,7 @@ export type PluginSettings = {
   lastCommitSha: string
   lastManifestEtag: string
   lastManifest: VaultManifest | null
+  serviceViews: Record<string, Partial<ServiceViewSettings>>
 }
 
 export const DEFAULT_SETTINGS: PluginSettings = {
@@ -53,7 +136,8 @@ export const DEFAULT_SETTINGS: PluginSettings = {
   serviceFolders: {},
   lastCommitSha: "",
   lastManifestEtag: "",
-  lastManifest: null
+  lastManifest: null,
+  serviceViews: {}
 }
 
 export type SyncProgress = {
@@ -69,4 +153,7 @@ export type SyncSummary = {
   updated: number
   deleted: number
   skipped: number
+  templatesCreated?: number
+  templatesUpdated?: number
+  templateConflicts?: number
 }

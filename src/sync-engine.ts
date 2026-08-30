@@ -1,6 +1,9 @@
 import { GithubRepositoryReader, NotionHubApi } from "./api"
 import { archiveManagedMarkdown, entityKey, mergeManagedMarkdown, sha256Hex, type EntityIdentity } from "./markdown"
-import type { ManifestEntry, PluginSettings, SyncProgress, SyncSummary, VaultManifest } from "./types"
+import { TemplateManager } from "./template-manager"
+import { materializeDetailLayout } from "./detail-template"
+import { TEMPLATE_PACKS } from "./templates"
+import type { ManifestArtifact, ManifestEntry, PluginSettings, SyncProgress, SyncSummary, VaultManifest } from "./types"
 
 export type VaultNote = { path: string; content: string; identity: EntityIdentity | null }
 
@@ -30,20 +33,18 @@ export class SyncEngine {
     const reader = this.readerFactory(credential.repository, credential.token)
     const commitSha = await reader.headCommit(signal)
     const remote = await reader.manifest(commitSha, this.settings.lastManifestEtag, signal)
-    if (remote.unchanged && this.settings.lastManifest) {
-      return { commitSha, created: 0, updated: 0, deleted: 0, skipped: Object.keys(this.settings.lastManifest.entries).length }
-    }
-    if (!remote.manifest) throw new Error("仓库 manifest 不可用")
+    const manifest = remote.manifest || this.settings.lastManifest
+    if (!manifest) throw new Error("仓库 manifest 不可用")
 
     const previous = this.settings.lastManifest || emptyManifest()
-    const changed = changedEntries(previous, remote.manifest)
-    const deleted = deletedEntries(previous, remote.manifest)
+    const changed = remote.unchanged ? [] : changedEntries(previous, manifest)
+    const deleted = remote.unchanged ? [] : deletedEntries(previous, manifest)
     const notes = await this.vault.notes()
     const byEntity = new Map(notes.flatMap((note) => note.identity ? [[entityKey(note.identity), note] as const] : []))
     let created = 0
     let updated = 0
     let removed = 0
-    let skipped = Object.keys(remote.manifest.entries).length - changed.length
+    let skipped = Object.keys(manifest.entries).length - changed.length
     const total = changed.length + deleted.length
     let completed = 0
 
@@ -59,9 +60,10 @@ export class SyncEngine {
         const existing = byEntity.get(entryKey(entry))
         const target = existing?.path || this.targetPath(entry)
         const local = existing?.content ?? await this.vault.read(target)
+        const detailed = materializeDetailLayout(remoteContent, TEMPLATE_PACKS[entry.service], entry.entityType)
         const materialized = this.settings.downloadImages
-          ? await cacheExternalImages(remoteContent, entry, this.settings.vaultRoot, this.vault, this.assetFetcher, signal)
-          : remoteContent
+          ? await cacheExternalImages(detailed, entry, this.settings.vaultRoot, this.vault, this.assetFetcher, signal)
+          : detailed
         await this.vault.writeAtomic(target, mergeManagedMarkdown(local, materialized))
         if (existing || local !== null) updated += 1
         else created += 1
@@ -76,11 +78,49 @@ export class SyncEngine {
       completed += 1
     }
 
-    await this.saveSettings({ lastCommitSha: commitSha, lastManifestEtag: remote.etag, lastManifest: remote.manifest })
-    this.settings = { ...this.settings, lastCommitSha: commitSha, lastManifestEtag: remote.etag, lastManifest: remote.manifest }
-    const summary = { commitSha, created, updated, deleted: removed, skipped }
-    this.progress({ phase: "complete", completed: total, total, message: `新增 ${created}，更新 ${updated}，归档 ${removed}` })
+    await this.syncArtifacts(reader, commitSha, manifest, previous, signal)
+    const services = new Set([
+      ...Object.keys(manifest.catalogs || {}),
+      ...Object.values(manifest.entries).map((entry) => entry.service),
+    ])
+    const templates = await new TemplateManager(this.vault, this.settings).ensure(services)
+
+    const etag = remote.etag || this.settings.lastManifestEtag
+    await this.saveSettings({ lastCommitSha: commitSha, lastManifestEtag: etag, lastManifest: manifest })
+    this.settings = { ...this.settings, lastCommitSha: commitSha, lastManifestEtag: etag, lastManifest: manifest }
+    const summary = {
+      commitSha, created, updated, deleted: removed, skipped,
+      templatesCreated: templates.created,
+      templatesUpdated: templates.updated,
+      templateConflicts: templates.conflicts.length,
+    }
+    this.progress({ phase: "complete", completed: total, total, message: `新增 ${created}，更新 ${updated}，归档 ${removed}，模板 ${templates.created + templates.updated}` })
     return summary
+  }
+
+  private async syncArtifacts(
+    reader: GithubRepositoryReader,
+    commitSha: string,
+    manifest: VaultManifest,
+    previous: VaultManifest,
+    signal?: AbortSignal,
+  ): Promise<void> {
+    const groups: Array<[Record<string, ManifestArtifact>, Record<string, ManifestArtifact>]> = [
+      [manifest.catalogs || {}, previous.catalogs || {}],
+      [manifest.analytics || {}, previous.analytics || {}],
+    ]
+    for (const [current, before] of groups) {
+      for (const [service, artifact] of Object.entries(current)) {
+        this.assertActive(signal)
+        const target = `${this.settings.vaultRoot}/${artifact.path}`.replace(/\/+/g, "/")
+        const local = await this.vault.read(target)
+        if (before[service]?.contentHash === artifact.contentHash && local !== null && await sha256Hex(local) === artifact.contentHash) continue
+        const content = await reader.file(artifact.path, commitSha, signal)
+        if (await sha256Hex(content) !== artifact.contentHash) throw new Error(`${artifact.path} 可视化数据校验失败`)
+        JSON.parse(content)
+        await this.vault.writeAtomic(target, content)
+      }
+    }
   }
 
   private async archive(note: VaultNote | undefined): Promise<number> {

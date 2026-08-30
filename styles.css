@@ -1,0 +1,174 @@
+.notionhub-view {
+  --notionhub-accent: var(--interactive-accent);
+  margin: 1rem 0 1.75rem;
+  color: var(--text-normal);
+}
+
+.notionhub-empty {
+  padding: 1rem;
+  border: 1px dashed var(--background-modifier-border);
+  border-radius: 10px;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.notionhub-gallery-search {
+  width: min(100%, 24rem);
+  margin-bottom: 0.8rem;
+}
+
+.notionhub-gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(132px, 1fr));
+  gap: 0.85rem;
+}
+
+.notionhub-gallery-card {
+  display: flex;
+  min-width: 0;
+  padding: 0;
+  overflow: hidden;
+  flex-direction: column;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 12px;
+  background: var(--background-secondary);
+  color: var(--text-normal);
+  cursor: pointer;
+  text-align: left;
+  transition: transform 120ms ease, border-color 120ms ease;
+}
+
+.notionhub-gallery-card:hover,
+.notionhub-gallery-card:focus-visible {
+  border-color: var(--notionhub-accent);
+  transform: translateY(-2px);
+}
+
+.notionhub-gallery-card img,
+.notionhub-gallery-placeholder {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  background: color-mix(in srgb, var(--notionhub-accent) 18%, var(--background-primary));
+}
+
+.notionhub-gallery-placeholder {
+  display: grid;
+  place-items: center;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+.notionhub-gallery-title {
+  padding: 0.65rem 0.7rem 0.75rem;
+  overflow: hidden;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.notionhub-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 0.75rem;
+}
+
+.notionhub-kpi-card {
+  padding: 0.9rem 1rem;
+  border-left: 4px solid var(--notionhub-accent);
+  border-radius: 10px;
+  background: var(--background-secondary);
+}
+
+.notionhub-kpi-card strong,
+.notionhub-kpi-card span {
+  display: block;
+}
+
+.notionhub-kpi-card strong {
+  margin-bottom: 0.25rem;
+  font-size: 1.55rem;
+}
+
+.notionhub-kpi-card span,
+.notionhub-chart-legend {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+.notionhub-heatmap-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.65rem;
+}
+
+.notionhub-heatmap-grid {
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-rows: repeat(7, 12px);
+  grid-auto-columns: 12px;
+  gap: 3px;
+  padding-bottom: 0.5rem;
+  overflow-x: auto;
+}
+
+.notionhub-heatmap-cell {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  background: color-mix(in srgb, var(--notionhub-accent) calc(var(--notionhub-level) * 85%), var(--background-modifier-border));
+}
+
+.notionhub-chart {
+  display: block;
+  width: 100%;
+  max-height: 320px;
+  border-radius: 12px;
+  background: var(--background-secondary);
+}
+
+.notionhub-chart-line {
+  stroke: var(--notionhub-accent);
+  stroke-width: 3;
+  vector-effect: non-scaling-stroke;
+}
+
+.notionhub-chart-area {
+  fill: color-mix(in srgb, var(--notionhub-accent) 22%, transparent);
+}
+
+.notionhub-chart-bar,
+.notionhub-chart-donut {
+  fill: var(--notionhub-accent);
+  stroke: var(--notionhub-accent);
+}
+
+.notionhub-series-1 { stroke: #8b5cf6; fill: #8b5cf6; }
+.notionhub-series-2 { stroke: #f59e0b; fill: #f59e0b; }
+.notionhub-series-3 { stroke: #10b981; fill: #10b981; }
+.notionhub-series-4 { stroke: #ef4444; fill: #ef4444; }
+.notionhub-series-5 { stroke: #06b6d4; fill: #06b6d4; }
+
+.notionhub-chart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem 1rem;
+  margin-top: 0.55rem;
+}
+
+@media (max-width: 520px) {
+  .notionhub-gallery-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .notionhub-kpi-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .notionhub-gallery-card {
+    transition: none;
+  }
+}

@@ -12,20 +12,47 @@ import {
 import { NotionHubApi } from "./api"
 import { identityFromFrontmatter } from "./markdown"
 import { SyncEngine, type VaultAdapter, type VaultNote } from "./sync-engine"
+import { TemplateManager } from "./template-manager"
+import { TEMPLATE_PACKS } from "./templates"
 import { DEFAULT_SETTINGS, type DeviceCredentials, type PluginSettings, type SyncProgress } from "./types"
+import { parseViewSpec, renderView } from "./view-renderer"
+import { VisualDataStore } from "./visual-store"
 
 export default class NotionHubPlugin extends Plugin {
   settings: PluginSettings = DEFAULT_SETTINGS
   private abortController: AbortController | null = null
   private intervalId: number | null = null
   private status = this.addStatusBarItem()
+  private vaultAdapter!: ObsidianVaultAdapter
+  private visualStore!: VisualDataStore
 
   async onload(): Promise<void> {
     this.settings = { ...DEFAULT_SETTINGS, ...(await this.loadData() as Partial<PluginSettings> | null || {}) }
+    this.vaultAdapter = new ObsidianVaultAdapter(this.app)
+    this.visualStore = new VisualDataStore(this.vaultAdapter, this.settings)
     this.addSettingTab(new NotionHubSettingTab(this.app, this))
     this.addRibbonIcon("refresh-cw", "同步 NotionHub", () => void this.sync())
     this.addCommand({ id: "sync-now", name: "立即同步", callback: () => void this.sync() })
     this.addCommand({ id: "cancel-sync", name: "取消当前同步", callback: () => this.cancelSync() })
+    this.addCommand({ id: "restore-templates", name: "恢复官方服务模板", callback: () => void this.restoreTemplates() })
+    this.registerMarkdownCodeBlockProcessor("notionhub-view", async (source, element, context) => {
+      try {
+        const spec = parseViewSpec(source)
+        const [catalog, analytics] = await Promise.all([
+          this.visualStore.catalog(spec.service),
+          this.visualStore.analysis(spec.service),
+        ])
+        renderView(element, spec, catalog, analytics, (path) => {
+          void this.app.workspace.openLinkText(path.replace(/\.md$/, ""), context.sourcePath, false)
+        })
+      } catch (error) {
+        element.replaceChildren()
+        const message = element.ownerDocument.createElement("p")
+        message.className = "notionhub-empty"
+        message.textContent = error instanceof Error ? error.message : "NotionHub 视图渲染失败"
+        element.append(message)
+      }
+    })
     this.configureInterval()
     this.app.workspace.onLayoutReady(() => {
       if (this.settings.syncOnStartup && this.settings.credentials) void this.sync()
@@ -41,6 +68,7 @@ export default class NotionHubPlugin extends Plugin {
   async saveSettings(patch: Partial<PluginSettings> = {}): Promise<void> {
     this.settings = { ...this.settings, ...patch }
     await this.saveData(this.settings)
+    if (this.vaultAdapter) this.visualStore = new VisualDataStore(this.vaultAdapter, this.settings)
     this.configureInterval()
   }
 
@@ -63,13 +91,15 @@ export default class NotionHubPlugin extends Plugin {
     try {
       const engine = new SyncEngine(
         this.api(),
-        new ObsidianVaultAdapter(this.app),
+        this.vaultAdapter,
         this.settings,
         (patch) => this.saveSettings(patch),
         (progress) => this.updateStatus(progress),
       )
       const result = await engine.run(this.abortController.signal)
-      new Notice(`NotionHub 同步完成：新增 ${result.created}，更新 ${result.updated}，归档 ${result.deleted}`)
+      this.visualStore.clear()
+      const conflicts = result.templateConflicts ? `，模板冲突 ${result.templateConflicts}` : ""
+      new Notice(`NotionHub 同步完成：新增 ${result.created}，更新 ${result.updated}，归档 ${result.deleted}${conflicts}`)
     } catch (error) {
       if (error instanceof DOMException && error.name === "AbortError") return
       const message = error instanceof Error ? error.message : "未知错误"
@@ -82,6 +112,16 @@ export default class NotionHubPlugin extends Plugin {
 
   cancelSync(): void {
     this.abortController?.abort()
+  }
+
+  async restoreTemplates(): Promise<void> {
+    const services = new Set([
+      ...Object.keys(this.settings.lastManifest?.catalogs || {}),
+      ...Object.values(this.settings.lastManifest?.entries || {}).map((entry) => entry.service),
+    ])
+    const targets = services.size ? services : new Set(Object.keys(TEMPLATE_PACKS))
+    const result = await new TemplateManager(this.vaultAdapter, this.settings).ensure(targets, true)
+    new Notice(`NotionHub 模板已恢复：新增 ${result.created}，更新 ${result.updated}，冲突 ${result.conflicts.length}`)
   }
 
   private updateStatus(progress: SyncProgress): void {
@@ -208,6 +248,15 @@ class NotionHubSettingTab extends PluginSettingTab {
       .addTextArea((text) => text.setValue(JSON.stringify(this.plugin.settings.serviceFolders, null, 2)).onChange(async (value) => {
         try { await this.plugin.saveSettings({ serviceFolders: JSON.parse(value || "{}") }) } catch { /* keep editing until valid */ }
       }))
+    new Setting(containerEl).setName("服务视图偏好").setDesc("按服务设置 range、sort、groupBy、color 和 hiddenViews；只影响官方模板受管区。")
+      .addTextArea((text) => text.setValue(JSON.stringify(this.plugin.settings.serviceViews, null, 2)).onChange(async (value) => {
+        try {
+          const parsed = JSON.parse(value || "{}")
+          if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) await this.plugin.saveSettings({ serviceViews: parsed })
+        } catch { /* keep editing until valid */ }
+      }))
+    new Setting(containerEl).setName("恢复官方模板").setDesc("重新生成受管区；用户手写区域和自定义 Frontmatter 保持不变。")
+      .addButton((button) => button.setButtonText("恢复").onClick(() => void this.plugin.restoreTemplates()))
     new Setting(containerEl).setName("手动同步").addButton((button) => button.setCta().setButtonText("立即同步").onClick(() => void this.plugin.sync()))
       .addButton((button) => button.setButtonText("取消").onClick(() => this.plugin.cancelSync()))
   }

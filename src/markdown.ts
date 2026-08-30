@@ -80,7 +80,7 @@ function replaceManagedRegion(body: string, managed: string): string {
 
 function frontmatterKey(line: string): string | null {
   if (/^\s/.test(line)) return null
-  return line.match(/^([A-Za-z0-9_-]+)\s*:/)?.[1] || null
+  return line.match(/^"?([A-Za-z0-9_-]+)"?\s*:/)?.[1] || null
 }
 
 function ensureTrailingNewline(value: string): string {

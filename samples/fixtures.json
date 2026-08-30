@@ -1,0 +1,5408 @@
+{
+  "weread": {
+    "catalog": {
+      "schemaVersion": 1,
+      "service": "weread",
+      "label": "微信读书",
+      "icon": "📚",
+      "color": "#2f7d32",
+      "primaryEntities": [
+        "bookshelf",
+        "book"
+      ],
+      "generatedAt": "2026-08-29T12:00:00Z",
+      "entries": [
+        {
+          "key": "weread:bookshelf:sample-1",
+          "entityType": "bookshelf",
+          "entityId": "sample-1",
+          "title": "微信读书 示例 1",
+          "path": "services/weread/bookshelf/sample-1.md",
+          "updatedAt": "2026-08-24T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-24"
+            },
+            "dimensions": {
+              "category": "学习"
+            },
+            "measures": {
+              "durationMinutes": 15
+            },
+            "media": {}
+          }
+        },
+        {
+          "key": "weread:bookshelf:sample-2",
+          "entityType": "bookshelf",
+          "entityId": "sample-2",
+          "title": "微信读书 示例 2",
+          "path": "services/weread/bookshelf/sample-2.md",
+          "updatedAt": "2026-08-25T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-25"
+            },
+            "dimensions": {
+              "category": "收藏"
+            },
+            "measures": {
+              "durationMinutes": 30
+            },
+            "media": {}
+          }
+        },
+        {
+          "key": "weread:bookshelf:sample-3",
+          "entityType": "bookshelf",
+          "entityId": "sample-3",
+          "title": "微信读书 示例 3",
+          "path": "services/weread/bookshelf/sample-3.md",
+          "updatedAt": "2026-08-26T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-26"
+            },
+            "dimensions": {
+              "category": "生活"
+            },
+            "measures": {
+              "durationMinutes": 45
+            },
+            "media": {}
+          }
+        },
+        {
+          "key": "weread:bookshelf:sample-4",
+          "entityType": "bookshelf",
+          "entityId": "sample-4",
+          "title": "微信读书 示例 4",
+          "path": "services/weread/bookshelf/sample-4.md",
+          "updatedAt": "2026-08-27T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-27"
+            },
+            "dimensions": {
+              "category": "学习"
+            },
+            "measures": {
+              "durationMinutes": 60
+            },
+            "media": {}
+          }
+        }
+      ]
+    },
+    "analytics": {
+      "schemaVersion": 1,
+      "service": "weread",
+      "generatedAt": "2026-08-29T12:00:00Z",
+      "series": [
+        {
+          "key": "total:bookshelf",
+          "kind": "kpi",
+          "label": "bookshelf",
+          "unit": "条",
+          "points": [
+            {
+              "key": "bookshelf",
+              "value": 4
+            }
+          ]
+        },
+        {
+          "key": "sum:durationMinutes",
+          "kind": "kpi",
+          "label": "durationMinutes",
+          "unit": "分钟",
+          "points": [
+            {
+              "key": "durationMinutes",
+              "value": 150
+            }
+          ]
+        },
+        {
+          "key": "heatmap:occurredAt",
+          "kind": "heatmap",
+          "label": "occurredAt",
+          "unit": "分钟",
+          "points": [
+            {
+              "key": "2026-08-24",
+              "value": 8
+            },
+            {
+              "key": "2026-08-25",
+              "value": 16
+            },
+            {
+              "key": "2026-08-26",
+              "value": 24
+            },
+            {
+              "key": "2026-08-27",
+              "value": 32
+            },
+            {
+              "key": "2026-08-28",
+              "value": 40
+            },
+            {
+              "key": "2026-08-29",
+              "value": 48
+            }
+          ]
+        },
+        {
+          "key": "category:category",
+          "kind": "category",
+          "label": "category",
+          "unit": "次",
+          "points": [
+            {
+              "key": "学习",
+              "value": 7
+            },
+            {
+              "key": "收藏",
+              "value": 5
+            },
+            {
+              "key": "生活",
+              "value": 3
+            }
+          ]
+        },
+        {
+          "key": "monthly:durationMinutes",
+          "kind": "timeSeries",
+          "label": "durationMinutes",
+          "unit": "分钟",
+          "points": [
+            {
+              "key": "2026-04",
+              "value": 40
+            },
+            {
+              "key": "2026-05",
+              "value": 64
+            },
+            {
+              "key": "2026-06",
+              "value": 88
+            },
+            {
+              "key": "2026-07",
+              "value": 112
+            },
+            {
+              "key": "2026-08",
+              "value": 136
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "podcast": {
+    "catalog": {
+      "schemaVersion": 1,
+      "service": "podcast",
+      "label": "小宇宙",
+      "icon": "🎧",
+      "color": "#8b5cf6",
+      "primaryEntities": [
+        "episode",
+        "podcast"
+      ],
+      "generatedAt": "2026-08-29T12:00:00Z",
+      "entries": [
+        {
+          "key": "podcast:episode:sample-1",
+          "entityType": "episode",
+          "entityId": "sample-1",
+          "title": "小宇宙 示例 1",
+          "path": "services/podcast/episode/sample-1.md",
+          "updatedAt": "2026-08-24T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-24"
+            },
+            "dimensions": {
+              "category": "学习"
+            },
+            "measures": {
+              "durationMinutes": 15
+            },
+            "media": {}
+          }
+        },
+        {
+          "key": "podcast:episode:sample-2",
+          "entityType": "episode",
+          "entityId": "sample-2",
+          "title": "小宇宙 示例 2",
+          "path": "services/podcast/episode/sample-2.md",
+          "updatedAt": "2026-08-25T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-25"
+            },
+            "dimensions": {
+              "category": "收藏"
+            },
+            "measures": {
+              "durationMinutes": 30
+            },
+            "media": {}
+          }
+        },
+        {
+          "key": "podcast:episode:sample-3",
+          "entityType": "episode",
+          "entityId": "sample-3",
+          "title": "小宇宙 示例 3",
+          "path": "services/podcast/episode/sample-3.md",
+          "updatedAt": "2026-08-26T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-26"
+            },
+            "dimensions": {
+              "category": "生活"
+            },
+            "measures": {
+              "durationMinutes": 45
+            },
+            "media": {}
+          }
+        },
+        {
+          "key": "podcast:episode:sample-4",
+          "entityType": "episode",
+          "entityId": "sample-4",
+          "title": "小宇宙 示例 4",
+          "path": "services/podcast/episode/sample-4.md",
+          "updatedAt": "2026-08-27T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-27"
+            },
+            "dimensions": {
+              "category": "学习"
+            },
+            "measures": {
+              "durationMinutes": 60
+            },
+            "media": {}
+          }
+        }
+      ]
+    },
+    "analytics": {
+      "schemaVersion": 1,
+      "service": "podcast",
+      "generatedAt": "2026-08-29T12:00:00Z",
+      "series": [
+        {
+          "key": "total:episode",
+          "kind": "kpi",
+          "label": "episode",
+          "unit": "条",
+          "points": [
+            {
+              "key": "episode",
+              "value": 4
+            }
+          ]
+        },
+        {
+          "key": "sum:durationMinutes",
+          "kind": "kpi",
+          "label": "durationMinutes",
+          "unit": "分钟",
+          "points": [
+            {
+              "key": "durationMinutes",
+              "value": 150
+            }
+          ]
+        },
+        {
+          "key": "heatmap:occurredAt",
+          "kind": "heatmap",
+          "label": "occurredAt",
+          "unit": "分钟",
+          "points": [
+            {
+              "key": "2026-08-24",
+              "value": 8
+            },
+            {
+              "key": "2026-08-25",
+              "value": 16
+            },
+            {
+              "key": "2026-08-26",
+              "value": 24
+            },
+            {
+              "key": "2026-08-27",
+              "value": 32
+            },
+            {
+              "key": "2026-08-28",
+              "value": 40
+            },
+            {
+              "key": "2026-08-29",
+              "value": 48
+            }
+          ]
+        },
+        {
+          "key": "category:category",
+          "kind": "category",
+          "label": "category",
+          "unit": "次",
+          "points": [
+            {
+              "key": "学习",
+              "value": 7
+            },
+            {
+              "key": "收藏",
+              "value": 5
+            },
+            {
+              "key": "生活",
+              "value": 3
+            }
+          ]
+        },
+        {
+          "key": "monthly:durationMinutes",
+          "kind": "timeSeries",
+          "label": "durationMinutes",
+          "unit": "分钟",
+          "points": [
+            {
+              "key": "2026-04",
+              "value": 40
+            },
+            {
+              "key": "2026-05",
+              "value": 64
+            },
+            {
+              "key": "2026-06",
+              "value": 88
+            },
+            {
+              "key": "2026-07",
+              "value": 112
+            },
+            {
+              "key": "2026-08",
+              "value": 136
+            }
+          ]
+        },
+        {
+          "key": "category:author",
+          "kind": "category",
+          "label": "author",
+          "unit": "",
+          "points": [
+            {
+              "key": "示例 A",
+              "value": 7
+            },
+            {
+              "key": "示例 B",
+              "value": 4
+            },
+            {
+              "key": "示例 C",
+              "value": 2
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "douban": {
+    "catalog": {
+      "schemaVersion": 1,
+      "service": "douban",
+      "label": "豆瓣",
+      "icon": "🎬",
+      "color": "#16a34a",
+      "primaryEntities": [
+        "movie",
+        "reading_bookshelf",
+        "music",
+        "game",
+        "podcast",
+        "stage"
+      ],
+      "generatedAt": "2026-08-29T12:00:00Z",
+      "entries": [
+        {
+          "key": "douban:movie:sample-1",
+          "entityType": "movie",
+          "entityId": "sample-1",
+          "title": "豆瓣 示例 1",
+          "path": "services/douban/movie/sample-1.md",
+          "updatedAt": "2026-08-24T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-24"
+            },
+            "dimensions": {
+              "category": "学习"
+            },
+            "measures": {
+              "durationMinutes": 15
+            },
+            "media": {}
+          }
+        },
+        {
+          "key": "douban:movie:sample-2",
+          "entityType": "movie",
+          "entityId": "sample-2",
+          "title": "豆瓣 示例 2",
+          "path": "services/douban/movie/sample-2.md",
+          "updatedAt": "2026-08-25T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-25"
+            },
+            "dimensions": {
+              "category": "收藏"
+            },
+            "measures": {
+              "durationMinutes": 30
+            },
+            "media": {}
+          }
+        },
+        {
+          "key": "douban:movie:sample-3",
+          "entityType": "movie",
+          "entityId": "sample-3",
+          "title": "豆瓣 示例 3",
+          "path": "services/douban/movie/sample-3.md",
+          "updatedAt": "2026-08-26T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-26"
+            },
+            "dimensions": {
+              "category": "生活"
+            },
+            "measures": {
+              "durationMinutes": 45
+            },
+            "media": {}
+          }
+        },
+        {
+          "key": "douban:movie:sample-4",
+          "entityType": "movie",
+          "entityId": "sample-4",
+          "title": "豆瓣 示例 4",
+          "path": "services/douban/movie/sample-4.md",
+          "updatedAt": "2026-08-27T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-27"
+            },
+            "dimensions": {
+              "category": "学习"
+            },
+            "measures": {
+              "durationMinutes": 60
+            },
+            "media": {}
+          }
+        }
+      ]
+    },
+    "analytics": {
+      "schemaVersion": 1,
+      "service": "douban",
+      "generatedAt": "2026-08-29T12:00:00Z",
+      "series": [
+        {
+          "key": "total:movie",
+          "kind": "kpi",
+          "label": "movie",
+          "unit": "条",
+          "points": [
+            {
+              "key": "movie",
+              "value": 4
+            }
+          ]
+        },
+        {
+          "key": "sum:durationMinutes",
+          "kind": "kpi",
+          "label": "durationMinutes",
+          "unit": "分钟",
+          "points": [
+            {
+              "key": "durationMinutes",
+              "value": 150
+            }
+          ]
+        },
+        {
+          "key": "heatmap:occurredAt",
+          "kind": "heatmap",
+          "label": "occurredAt",
+          "unit": "分钟",
+          "points": [
+            {
+              "key": "2026-08-24",
+              "value": 8
+            },
+            {
+              "key": "2026-08-25",
+              "value": 16
+            },
+            {
+              "key": "2026-08-26",
+              "value": 24
+            },
+            {
+              "key": "2026-08-27",
+              "value": 32
+            },
+            {
+              "key": "2026-08-28",
+              "value": 40
+            },
+            {
+              "key": "2026-08-29",
+              "value": 48
+            }
+          ]
+        },
+        {
+          "key": "category:category",
+          "kind": "category",
+          "label": "category",
+          "unit": "次",
+          "points": [
+            {
+              "key": "学习",
+              "value": 7
+            },
+            {
+              "key": "收藏",
+              "value": 5
+            },
+            {
+              "key": "生活",
+              "value": 3
+            }
+          ]
+        },
+        {
+          "key": "monthly:durationMinutes",
+          "kind": "timeSeries",
+          "label": "durationMinutes",
+          "unit": "分钟",
+          "points": [
+            {
+              "key": "2026-04",
+              "value": 40
+            },
+            {
+              "key": "2026-05",
+              "value": 64
+            },
+            {
+              "key": "2026-06",
+              "value": 88
+            },
+            {
+              "key": "2026-07",
+              "value": 112
+            },
+            {
+              "key": "2026-08",
+              "value": 136
+            }
+          ]
+        },
+        {
+          "key": "monthly:rating",
+          "kind": "timeSeries",
+          "label": "rating",
+          "unit": "分钟",
+          "points": [
+            {
+              "key": "2026-04",
+              "value": 20
+            },
+            {
+              "key": "2026-05",
+              "value": 35
+            },
+            {
+              "key": "2026-06",
+              "value": 50
+            },
+            {
+              "key": "2026-07",
+              "value": 65
+            },
+            {
+              "key": "2026-08",
+              "value": 80
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "keep": {
+    "catalog": {
+      "schemaVersion": 1,
+      "service": "keep",
+      "label": "Keep",
+      "icon": "🏃",
+      "color": "#22c55e",
+      "primaryEntities": [
+        "workout",
+        "sleep"
+      ],
+      "generatedAt": "2026-08-29T12:00:00Z",
+      "entries": [
+        {
+          "key": "keep:workout:sample-1",
+          "entityType": "workout",
+          "entityId": "sample-1",
+          "title": "Keep 示例 1",
+          "path": "services/keep/workout/sample-1.md",
+          "updatedAt": "2026-08-24T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-24"
+            },
+            "dimensions": {
+              "category": "学习"
+            },
+            "measures": {
+              "durationMinutes": 15
+            },
+            "media": {}
+          }
+        },
+        {
+          "key": "keep:workout:sample-2",
+          "entityType": "workout",
+          "entityId": "sample-2",
+          "title": "Keep 示例 2",
+          "path": "services/keep/workout/sample-2.md",
+          "updatedAt": "2026-08-25T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-25"
+            },
+            "dimensions": {
+              "category": "收藏"
+            },
+            "measures": {
+              "durationMinutes": 30
+            },
+            "media": {}
+          }
+        },
+        {
+          "key": "keep:workout:sample-3",
+          "entityType": "workout",
+          "entityId": "sample-3",
+          "title": "Keep 示例 3",
+          "path": "services/keep/workout/sample-3.md",
+          "updatedAt": "2026-08-26T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-26"
+            },
+            "dimensions": {
+              "category": "生活"
+            },
+            "measures": {
+              "durationMinutes": 45
+            },
+            "media": {}
+          }
+        },
+        {
+          "key": "keep:workout:sample-4",
+          "entityType": "workout",
+          "entityId": "sample-4",
+          "title": "Keep 示例 4",
+          "path": "services/keep/workout/sample-4.md",
+          "updatedAt": "2026-08-27T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-27"
+            },
+            "dimensions": {
+              "category": "学习"
+            },
+            "measures": {
+              "durationMinutes": 60
+            },
+            "media": {}
+          }
+        }
+      ]
+    },
+    "analytics": {
+      "schemaVersion": 1,
+      "service": "keep",
+      "generatedAt": "2026-08-29T12:00:00Z",
+      "series": [
+        {
+          "key": "total:workout",
+          "kind": "kpi",
+          "label": "workout",
+          "unit": "条",
+          "points": [
+            {
+              "key": "workout",
+              "value": 4
+            }
+          ]
+        },
+        {
+          "key": "sum:durationMinutes",
+          "kind": "kpi",
+          "label": "durationMinutes",
+          "unit": "分钟",
+          "points": [
+            {
+              "key": "durationMinutes",
+              "value": 150
+            }
+          ]
+        },
+        {
+          "key": "heatmap:occurredAt",
+          "kind": "heatmap",
+          "label": "occurredAt",
+          "unit": "分钟",
+          "points": [
+            {
+              "key": "2026-08-24",
+              "value": 8
+            },
+            {
+              "key": "2026-08-25",
+              "value": 16
+            },
+            {
+              "key": "2026-08-26",
+              "value": 24
+            },
+            {
+              "key": "2026-08-27",
+              "value": 32
+            },
+            {
+              "key": "2026-08-28",
+              "value": 40
+            },
+            {
+              "key": "2026-08-29",
+              "value": 48
+            }
+          ]
+        },
+        {
+          "key": "category:category",
+          "kind": "category",
+          "label": "category",
+          "unit": "次",
+          "points": [
+            {
+              "key": "学习",
+              "value": 7
+            },
+            {
+              "key": "收藏",
+              "value": 5
+            },
+            {
+              "key": "生活",
+              "value": 3
+            }
+          ]
+        },
+        {
+          "key": "monthly:durationMinutes",
+          "kind": "timeSeries",
+          "label": "durationMinutes",
+          "unit": "分钟",
+          "points": [
+            {
+              "key": "2026-04",
+              "value": 40
+            },
+            {
+              "key": "2026-05",
+              "value": 64
+            },
+            {
+              "key": "2026-06",
+              "value": 88
+            },
+            {
+              "key": "2026-07",
+              "value": 112
+            },
+            {
+              "key": "2026-08",
+              "value": 136
+            }
+          ]
+        },
+        {
+          "key": "category:type",
+          "kind": "category",
+          "label": "type",
+          "unit": "",
+          "points": [
+            {
+              "key": "示例 A",
+              "value": 7
+            },
+            {
+              "key": "示例 B",
+              "value": 4
+            },
+            {
+              "key": "示例 C",
+              "value": 2
+            }
+          ]
+        },
+        {
+          "key": "monthly:weight",
+          "kind": "timeSeries",
+          "label": "weight",
+          "unit": "分钟",
+          "points": [
+            {
+              "key": "2026-04",
+              "value": 20
+            },
+            {
+              "key": "2026-05",
+              "value": 35
+            },
+            {
+              "key": "2026-06",
+              "value": 50
+            },
+            {
+              "key": "2026-07",
+              "value": 65
+            },
+            {
+              "key": "2026-08",
+              "value": 80
+            }
+          ]
+        },
+        {
+          "key": "monthly:heartRate",
+          "kind": "timeSeries",
+          "label": "heartRate",
+          "unit": "分钟",
+          "points": [
+            {
+              "key": "2026-04",
+              "value": 20
+            },
+            {
+              "key": "2026-05",
+              "value": 35
+            },
+            {
+              "key": "2026-06",
+              "value": 50
+            },
+            {
+              "key": "2026-07",
+              "value": 65
+            },
+            {
+              "key": "2026-08",
+              "value": 80
+            }
+          ]
+        },
+        {
+          "key": "monthly:bloodOxygen",
+          "kind": "timeSeries",
+          "label": "bloodOxygen",
+          "unit": "分钟",
+          "points": [
+            {
+              "key": "2026-04",
+              "value": 20
+            },
+            {
+              "key": "2026-05",
+              "value": 35
+            },
+            {
+              "key": "2026-06",
+              "value": 50
+            },
+            {
+              "key": "2026-07",
+              "value": 65
+            },
+            {
+              "key": "2026-08",
+              "value": 80
+            }
+          ]
+        },
+        {
+          "key": "monthly:vo2max",
+          "kind": "timeSeries",
+          "label": "vo2max",
+          "unit": "分钟",
+          "points": [
+            {
+              "key": "2026-04",
+              "value": 20
+            },
+            {
+              "key": "2026-05",
+              "value": 35
+            },
+            {
+              "key": "2026-06",
+              "value": 50
+            },
+            {
+              "key": "2026-07",
+              "value": 65
+            },
+            {
+              "key": "2026-08",
+              "value": 80
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "dida": {
+    "catalog": {
+      "schemaVersion": 1,
+      "service": "dida",
+      "label": "滴答清单",
+      "icon": "✅",
+      "color": "#3b82f6",
+      "primaryEntities": [
+        "task",
+        "habit",
+        "pomodoro",
+        "countdown"
+      ],
+      "generatedAt": "2026-08-29T12:00:00Z",
+      "entries": [
+        {
+          "key": "dida:task:sample-1",
+          "entityType": "task",
+          "entityId": "sample-1",
+          "title": "滴答清单 示例 1",
+          "path": "services/dida/task/sample-1.md",
+          "updatedAt": "2026-08-24T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-24"
+            },
+            "dimensions": {
+              "category": "学习"
+            },
+            "measures": {
+              "durationMinutes": 15
+            },
+            "media": {}
+          }
+        },
+        {
+          "key": "dida:task:sample-2",
+          "entityType": "task",
+          "entityId": "sample-2",
+          "title": "滴答清单 示例 2",
+          "path": "services/dida/task/sample-2.md",
+          "updatedAt": "2026-08-25T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-25"
+            },
+            "dimensions": {
+              "category": "收藏"
+            },
+            "measures": {
+              "durationMinutes": 30
+            },
+            "media": {}
+          }
+        },
+        {
+          "key": "dida:task:sample-3",
+          "entityType": "task",
+          "entityId": "sample-3",
+          "title": "滴答清单 示例 3",
+          "path": "services/dida/task/sample-3.md",
+          "updatedAt": "2026-08-26T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-26"
+            },
+            "dimensions": {
+              "category": "生活"
+            },
+            "measures": {
+              "durationMinutes": 45
+            },
+            "media": {}
+          }
+        },
+        {
+          "key": "dida:task:sample-4",
+          "entityType": "task",
+          "entityId": "sample-4",
+          "title": "滴答清单 示例 4",
+          "path": "services/dida/task/sample-4.md",
+          "updatedAt": "2026-08-27T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-27"
+            },
+            "dimensions": {
+              "category": "学习"
+            },
+            "measures": {
+              "durationMinutes": 60
+            },
+            "media": {}
+          }
+        }
+      ]
+    },
+    "analytics": {
+      "schemaVersion": 1,
+      "service": "dida",
+      "generatedAt": "2026-08-29T12:00:00Z",
+      "series": [
+        {
+          "key": "total:task",
+          "kind": "kpi",
+          "label": "task",
+          "unit": "条",
+          "points": [
+            {
+              "key": "task",
+              "value": 4
+            }
+          ]
+        },
+        {
+          "key": "sum:durationMinutes",
+          "kind": "kpi",
+          "label": "durationMinutes",
+          "unit": "分钟",
+          "points": [
+            {
+              "key": "durationMinutes",
+              "value": 150
+            }
+          ]
+        },
+        {
+          "key": "heatmap:occurredAt",
+          "kind": "heatmap",
+          "label": "occurredAt",
+          "unit": "分钟",
+          "points": [
+            {
+              "key": "2026-08-24",
+              "value": 8
+            },
+            {
+              "key": "2026-08-25",
+              "value": 16
+            },
+            {
+              "key": "2026-08-26",
+              "value": 24
+            },
+            {
+              "key": "2026-08-27",
+              "value": 32
+            },
+            {
+              "key": "2026-08-28",
+              "value": 40
+            },
+            {
+              "key": "2026-08-29",
+              "value": 48
+            }
+          ]
+        },
+        {
+          "key": "category:category",
+          "kind": "category",
+          "label": "category",
+          "unit": "次",
+          "points": [
+            {
+              "key": "学习",
+              "value": 7
+            },
+            {
+              "key": "收藏",
+              "value": 5
+            },
+            {
+              "key": "生活",
+              "value": 3
+            }
+          ]
+        },
+        {
+          "key": "monthly:durationMinutes",
+          "kind": "timeSeries",
+          "label": "durationMinutes",
+          "unit": "分钟",
+          "points": [
+            {
+              "key": "2026-04",
+              "value": 40
+            },
+            {
+              "key": "2026-05",
+              "value": 64
+            },
+            {
+              "key": "2026-06",
+              "value": 88
+            },
+            {
+              "key": "2026-07",
+              "value": 112
+            },
+            {
+              "key": "2026-08",
+              "value": 136
+            }
+          ]
+        },
+        {
+          "key": "category:status",
+          "kind": "category",
+          "label": "status",
+          "unit": "",
+          "points": [
+            {
+              "key": "示例 A",
+              "value": 7
+            },
+            {
+              "key": "示例 B",
+              "value": 4
+            },
+            {
+              "key": "示例 C",
+              "value": 2
+            }
+          ]
+        },
+        {
+          "key": "category:playlist",
+          "kind": "category",
+          "label": "playlist",
+          "unit": "",
+          "points": [
+            {
+              "key": "示例 A",
+              "value": 7
+            },
+            {
+              "key": "示例 B",
+              "value": 4
+            },
+            {
+              "key": "示例 C",
+              "value": 2
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "flomo": {
+    "catalog": {
+      "schemaVersion": 1,
+      "service": "flomo",
+      "label": "Flomo",
+      "icon": "📝",
+      "color": "#f59e0b",
+      "primaryEntities": [
+        "notes",
+        "memo"
+      ],
+      "generatedAt": "2026-08-29T12:00:00Z",
+      "entries": [
+        {
+          "key": "flomo:notes:sample-1",
+          "entityType": "notes",
+          "entityId": "sample-1",
+          "title": "Flomo 示例 1",
+          "path": "services/flomo/notes/sample-1.md",
+          "updatedAt": "2026-08-24T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-24"
+            },
+            "dimensions": {
+              "category": "学习"
+            },
+            "measures": {
+              "durationMinutes": 15
+            },
+            "media": {}
+          }
+        },
+        {
+          "key": "flomo:notes:sample-2",
+          "entityType": "notes",
+          "entityId": "sample-2",
+          "title": "Flomo 示例 2",
+          "path": "services/flomo/notes/sample-2.md",
+          "updatedAt": "2026-08-25T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-25"
+            },
+            "dimensions": {
+              "category": "收藏"
+            },
+            "measures": {
+              "durationMinutes": 30
+            },
+            "media": {}
+          }
+        },
+        {
+          "key": "flomo:notes:sample-3",
+          "entityType": "notes",
+          "entityId": "sample-3",
+          "title": "Flomo 示例 3",
+          "path": "services/flomo/notes/sample-3.md",
+          "updatedAt": "2026-08-26T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-26"
+            },
+            "dimensions": {
+              "category": "生活"
+            },
+            "measures": {
+              "durationMinutes": 45
+            },
+            "media": {}
+          }
+        },
+        {
+          "key": "flomo:notes:sample-4",
+          "entityType": "notes",
+          "entityId": "sample-4",
+          "title": "Flomo 示例 4",
+          "path": "services/flomo/notes/sample-4.md",
+          "updatedAt": "2026-08-27T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-27"
+            },
+            "dimensions": {
+              "category": "学习"
+            },
+            "measures": {
+              "durationMinutes": 60
+            },
+            "media": {}
+          }
+        }
+      ]
+    },
+    "analytics": {
+      "schemaVersion": 1,
+      "service": "flomo",
+      "generatedAt": "2026-08-29T12:00:00Z",
+      "series": [
+        {
+          "key": "total:notes",
+          "kind": "kpi",
+          "label": "notes",
+          "unit": "条",
+          "points": [
+            {
+              "key": "notes",
+              "value": 4
+            }
+          ]
+        },
+        {
+          "key": "sum:durationMinutes",
+          "kind": "kpi",
+          "label": "durationMinutes",
+          "unit": "分钟",
+          "points": [
+            {
+              "key": "durationMinutes",
+              "value": 150
+            }
+          ]
+        },
+        {
+          "key": "heatmap:occurredAt",
+          "kind": "heatmap",
+          "label": "occurredAt",
+          "unit": "分钟",
+          "points": [
+            {
+              "key": "2026-08-24",
+              "value": 8
+            },
+            {
+              "key": "2026-08-25",
+              "value": 16
+            },
+            {
+              "key": "2026-08-26",
+              "value": 24
+            },
+            {
+              "key": "2026-08-27",
+              "value": 32
+            },
+            {
+              "key": "2026-08-28",
+              "value": 40
+            },
+            {
+              "key": "2026-08-29",
+              "value": 48
+            }
+          ]
+        },
+        {
+          "key": "category:category",
+          "kind": "category",
+          "label": "category",
+          "unit": "次",
+          "points": [
+            {
+              "key": "学习",
+              "value": 7
+            },
+            {
+              "key": "收藏",
+              "value": 5
+            },
+            {
+              "key": "生活",
+              "value": 3
+            }
+          ]
+        },
+        {
+          "key": "monthly:durationMinutes",
+          "kind": "timeSeries",
+          "label": "durationMinutes",
+          "unit": "分钟",
+          "points": [
+            {
+              "key": "2026-04",
+              "value": 40
+            },
+            {
+              "key": "2026-05",
+              "value": 64
+            },
+            {
+              "key": "2026-06",
+              "value": 88
+            },
+            {
+              "key": "2026-07",
+              "value": 112
+            },
+            {
+              "key": "2026-08",
+              "value": 136
+            }
+          ]
+        },
+        {
+          "key": "category:tags",
+          "kind": "category",
+          "label": "tags",
+          "unit": "",
+          "points": [
+            {
+              "key": "示例 A",
+              "value": 7
+            },
+            {
+              "key": "示例 B",
+              "value": 4
+            },
+            {
+              "key": "示例 C",
+              "value": 2
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "duolingo": {
+    "catalog": {
+      "schemaVersion": 1,
+      "service": "duolingo",
+      "label": "多邻国",
+      "icon": "🦉",
+      "color": "#58cc02",
+      "primaryEntities": [
+        "day",
+        "words",
+        "mistakes"
+      ],
+      "generatedAt": "2026-08-29T12:00:00Z",
+      "entries": [
+        {
+          "key": "duolingo:day:sample-1",
+          "entityType": "day",
+          "entityId": "sample-1",
+          "title": "多邻国 示例 1",
+          "path": "services/duolingo/day/sample-1.md",
+          "updatedAt": "2026-08-24T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-24"
+            },
+            "dimensions": {
+              "category": "学习"
+            },
+            "measures": {
+              "durationMinutes": 15
+            },
+            "media": {}
+          }
+        },
+        {
+          "key": "duolingo:day:sample-2",
+          "entityType": "day",
+          "entityId": "sample-2",
+          "title": "多邻国 示例 2",
+          "path": "services/duolingo/day/sample-2.md",
+          "updatedAt": "2026-08-25T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-25"
+            },
+            "dimensions": {
+              "category": "收藏"
+            },
+            "measures": {
+              "durationMinutes": 30
+            },
+            "media": {}
+          }
+        },
+        {
+          "key": "duolingo:day:sample-3",
+          "entityType": "day",
+          "entityId": "sample-3",
+          "title": "多邻国 示例 3",
+          "path": "services/duolingo/day/sample-3.md",
+          "updatedAt": "2026-08-26T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-26"
+            },
+            "dimensions": {
+              "category": "生活"
+            },
+            "measures": {
+              "durationMinutes": 45
+            },
+            "media": {}
+          }
+        },
+        {
+          "key": "duolingo:day:sample-4",
+          "entityType": "day",
+          "entityId": "sample-4",
+          "title": "多邻国 示例 4",
+          "path": "services/duolingo/day/sample-4.md",
+          "updatedAt": "2026-08-27T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-27"
+            },
+            "dimensions": {
+              "category": "学习"
+            },
+            "measures": {
+              "durationMinutes": 60
+            },
+            "media": {}
+          }
+        }
+      ]
+    },
+    "analytics": {
+      "schemaVersion": 1,
+      "service": "duolingo",
+      "generatedAt": "2026-08-29T12:00:00Z",
+      "series": [
+        {
+          "key": "total:day",
+          "kind": "kpi",
+          "label": "day",
+          "unit": "条",
+          "points": [
+            {
+              "key": "day",
+              "value": 4
+            }
+          ]
+        },
+        {
+          "key": "sum:durationMinutes",
+          "kind": "kpi",
+          "label": "durationMinutes",
+          "unit": "分钟",
+          "points": [
+            {
+              "key": "durationMinutes",
+              "value": 150
+            }
+          ]
+        },
+        {
+          "key": "heatmap:occurredAt",
+          "kind": "heatmap",
+          "label": "occurredAt",
+          "unit": "分钟",
+          "points": [
+            {
+              "key": "2026-08-24",
+              "value": 8
+            },
+            {
+              "key": "2026-08-25",
+              "value": 16
+            },
+            {
+              "key": "2026-08-26",
+              "value": 24
+            },
+            {
+              "key": "2026-08-27",
+              "value": 32
+            },
+            {
+              "key": "2026-08-28",
+              "value": 40
+            },
+            {
+              "key": "2026-08-29",
+              "value": 48
+            }
+          ]
+        },
+        {
+          "key": "category:category",
+          "kind": "category",
+          "label": "category",
+          "unit": "次",
+          "points": [
+            {
+              "key": "学习",
+              "value": 7
+            },
+            {
+              "key": "收藏",
+              "value": 5
+            },
+            {
+              "key": "生活",
+              "value": 3
+            }
+          ]
+        },
+        {
+          "key": "monthly:durationMinutes",
+          "kind": "timeSeries",
+          "label": "durationMinutes",
+          "unit": "分钟",
+          "points": [
+            {
+              "key": "2026-04",
+              "value": 40
+            },
+            {
+              "key": "2026-05",
+              "value": 64
+            },
+            {
+              "key": "2026-06",
+              "value": 88
+            },
+            {
+              "key": "2026-07",
+              "value": 112
+            },
+            {
+              "key": "2026-08",
+              "value": 136
+            }
+          ]
+        },
+        {
+          "key": "monthly:xp",
+          "kind": "timeSeries",
+          "label": "xp",
+          "unit": "分钟",
+          "points": [
+            {
+              "key": "2026-04",
+              "value": 20
+            },
+            {
+              "key": "2026-05",
+              "value": 35
+            },
+            {
+              "key": "2026-06",
+              "value": 50
+            },
+            {
+              "key": "2026-07",
+              "value": 65
+            },
+            {
+              "key": "2026-08",
+              "value": 80
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "bbdc": {
+    "catalog": {
+      "schemaVersion": 1,
+      "service": "bbdc",
+      "label": "不背单词",
+      "icon": "🔤",
+      "color": "#06b6d4",
+      "primaryEntities": [
+        "day"
+      ],
+      "generatedAt": "2026-08-29T12:00:00Z",
+      "entries": [
+        {
+          "key": "bbdc:day:sample-1",
+          "entityType": "day",
+          "entityId": "sample-1",
+          "title": "不背单词 示例 1",
+          "path": "services/bbdc/day/sample-1.md",
+          "updatedAt": "2026-08-24T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-24"
+            },
+            "dimensions": {
+              "category": "学习"
+            },
+            "measures": {
+              "durationMinutes": 15
+            },
+            "media": {}
+          }
+        },
+        {
+          "key": "bbdc:day:sample-2",
+          "entityType": "day",
+          "entityId": "sample-2",
+          "title": "不背单词 示例 2",
+          "path": "services/bbdc/day/sample-2.md",
+          "updatedAt": "2026-08-25T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-25"
+            },
+            "dimensions": {
+              "category": "收藏"
+            },
+            "measures": {
+              "durationMinutes": 30
+            },
+            "media": {}
+          }
+        },
+        {
+          "key": "bbdc:day:sample-3",
+          "entityType": "day",
+          "entityId": "sample-3",
+          "title": "不背单词 示例 3",
+          "path": "services/bbdc/day/sample-3.md",
+          "updatedAt": "2026-08-26T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-26"
+            },
+            "dimensions": {
+              "category": "生活"
+            },
+            "measures": {
+              "durationMinutes": 45
+            },
+            "media": {}
+          }
+        },
+        {
+          "key": "bbdc:day:sample-4",
+          "entityType": "day",
+          "entityId": "sample-4",
+          "title": "不背单词 示例 4",
+          "path": "services/bbdc/day/sample-4.md",
+          "updatedAt": "2026-08-27T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-27"
+            },
+            "dimensions": {
+              "category": "学习"
+            },
+            "measures": {
+              "durationMinutes": 60
+            },
+            "media": {}
+          }
+        }
+      ]
+    },
+    "analytics": {
+      "schemaVersion": 1,
+      "service": "bbdc",
+      "generatedAt": "2026-08-29T12:00:00Z",
+      "series": [
+        {
+          "key": "total:day",
+          "kind": "kpi",
+          "label": "day",
+          "unit": "条",
+          "points": [
+            {
+              "key": "day",
+              "value": 4
+            }
+          ]
+        },
+        {
+          "key": "sum:durationMinutes",
+          "kind": "kpi",
+          "label": "durationMinutes",
+          "unit": "分钟",
+          "points": [
+            {
+              "key": "durationMinutes",
+              "value": 150
+            }
+          ]
+        },
+        {
+          "key": "heatmap:occurredAt",
+          "kind": "heatmap",
+          "label": "occurredAt",
+          "unit": "分钟",
+          "points": [
+            {
+              "key": "2026-08-24",
+              "value": 8
+            },
+            {
+              "key": "2026-08-25",
+              "value": 16
+            },
+            {
+              "key": "2026-08-26",
+              "value": 24
+            },
+            {
+              "key": "2026-08-27",
+              "value": 32
+            },
+            {
+              "key": "2026-08-28",
+              "value": 40
+            },
+            {
+              "key": "2026-08-29",
+              "value": 48
+            }
+          ]
+        },
+        {
+          "key": "category:category",
+          "kind": "category",
+          "label": "category",
+          "unit": "次",
+          "points": [
+            {
+              "key": "学习",
+              "value": 7
+            },
+            {
+              "key": "收藏",
+              "value": 5
+            },
+            {
+              "key": "生活",
+              "value": 3
+            }
+          ]
+        },
+        {
+          "key": "monthly:durationMinutes",
+          "kind": "timeSeries",
+          "label": "durationMinutes",
+          "unit": "分钟",
+          "points": [
+            {
+              "key": "2026-04",
+              "value": 40
+            },
+            {
+              "key": "2026-05",
+              "value": 64
+            },
+            {
+              "key": "2026-06",
+              "value": 88
+            },
+            {
+              "key": "2026-07",
+              "value": 112
+            },
+            {
+              "key": "2026-08",
+              "value": 136
+            }
+          ]
+        },
+        {
+          "key": "monthly:count",
+          "kind": "timeSeries",
+          "label": "count",
+          "unit": "分钟",
+          "points": [
+            {
+              "key": "2026-04",
+              "value": 20
+            },
+            {
+              "key": "2026-05",
+              "value": 35
+            },
+            {
+              "key": "2026-06",
+              "value": 50
+            },
+            {
+              "key": "2026-07",
+              "value": 65
+            },
+            {
+              "key": "2026-08",
+              "value": 80
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "bilibili": {
+    "catalog": {
+      "schemaVersion": 1,
+      "service": "bilibili",
+      "label": "哔哩哔哩",
+      "icon": "📺",
+      "color": "#fb7299",
+      "primaryEntities": [
+        "bilibili",
+        "video",
+        "bangumi"
+      ],
+      "generatedAt": "2026-08-29T12:00:00Z",
+      "entries": [
+        {
+          "key": "bilibili:bilibili:sample-1",
+          "entityType": "bilibili",
+          "entityId": "sample-1",
+          "title": "哔哩哔哩 示例 1",
+          "path": "services/bilibili/bilibili/sample-1.md",
+          "updatedAt": "2026-08-24T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-24"
+            },
+            "dimensions": {
+              "category": "学习"
+            },
+            "measures": {
+              "durationMinutes": 15
+            },
+            "media": {}
+          }
+        },
+        {
+          "key": "bilibili:bilibili:sample-2",
+          "entityType": "bilibili",
+          "entityId": "sample-2",
+          "title": "哔哩哔哩 示例 2",
+          "path": "services/bilibili/bilibili/sample-2.md",
+          "updatedAt": "2026-08-25T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-25"
+            },
+            "dimensions": {
+              "category": "收藏"
+            },
+            "measures": {
+              "durationMinutes": 30
+            },
+            "media": {}
+          }
+        },
+        {
+          "key": "bilibili:bilibili:sample-3",
+          "entityType": "bilibili",
+          "entityId": "sample-3",
+          "title": "哔哩哔哩 示例 3",
+          "path": "services/bilibili/bilibili/sample-3.md",
+          "updatedAt": "2026-08-26T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-26"
+            },
+            "dimensions": {
+              "category": "生活"
+            },
+            "measures": {
+              "durationMinutes": 45
+            },
+            "media": {}
+          }
+        },
+        {
+          "key": "bilibili:bilibili:sample-4",
+          "entityType": "bilibili",
+          "entityId": "sample-4",
+          "title": "哔哩哔哩 示例 4",
+          "path": "services/bilibili/bilibili/sample-4.md",
+          "updatedAt": "2026-08-27T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-27"
+            },
+            "dimensions": {
+              "category": "学习"
+            },
+            "measures": {
+              "durationMinutes": 60
+            },
+            "media": {}
+          }
+        }
+      ]
+    },
+    "analytics": {
+      "schemaVersion": 1,
+      "service": "bilibili",
+      "generatedAt": "2026-08-29T12:00:00Z",
+      "series": [
+        {
+          "key": "total:bilibili",
+          "kind": "kpi",
+          "label": "bilibili",
+          "unit": "条",
+          "points": [
+            {
+              "key": "bilibili",
+              "value": 4
+            }
+          ]
+        },
+        {
+          "key": "sum:durationMinutes",
+          "kind": "kpi",
+          "label": "durationMinutes",
+          "unit": "分钟",
+          "points": [
+            {
+              "key": "durationMinutes",
+              "value": 150
+            }
+          ]
+        },
+        {
+          "key": "heatmap:occurredAt",
+          "kind": "heatmap",
+          "label": "occurredAt",
+          "unit": "分钟",
+          "points": [
+            {
+              "key": "2026-08-24",
+              "value": 8
+            },
+            {
+              "key": "2026-08-25",
+              "value": 16
+            },
+            {
+              "key": "2026-08-26",
+              "value": 24
+            },
+            {
+              "key": "2026-08-27",
+              "value": 32
+            },
+            {
+              "key": "2026-08-28",
+              "value": 40
+            },
+            {
+              "key": "2026-08-29",
+              "value": 48
+            }
+          ]
+        },
+        {
+          "key": "category:category",
+          "kind": "category",
+          "label": "category",
+          "unit": "次",
+          "points": [
+            {
+              "key": "学习",
+              "value": 7
+            },
+            {
+              "key": "收藏",
+              "value": 5
+            },
+            {
+              "key": "生活",
+              "value": 3
+            }
+          ]
+        },
+        {
+          "key": "monthly:durationMinutes",
+          "kind": "timeSeries",
+          "label": "durationMinutes",
+          "unit": "分钟",
+          "points": [
+            {
+              "key": "2026-04",
+              "value": 40
+            },
+            {
+              "key": "2026-05",
+              "value": 64
+            },
+            {
+              "key": "2026-06",
+              "value": 88
+            },
+            {
+              "key": "2026-07",
+              "value": 112
+            },
+            {
+              "key": "2026-08",
+              "value": 136
+            }
+          ]
+        },
+        {
+          "key": "category:author",
+          "kind": "category",
+          "label": "author",
+          "unit": "",
+          "points": [
+            {
+              "key": "示例 A",
+              "value": 7
+            },
+            {
+              "key": "示例 B",
+              "value": 4
+            },
+            {
+              "key": "示例 C",
+              "value": 2
+            }
+          ]
+        },
+        {
+          "key": "category:playlist",
+          "kind": "category",
+          "label": "playlist",
+          "unit": "",
+          "points": [
+            {
+              "key": "示例 A",
+              "value": 7
+            },
+            {
+              "key": "示例 B",
+              "value": 4
+            },
+            {
+              "key": "示例 C",
+              "value": 2
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "neteasemusic": {
+    "catalog": {
+      "schemaVersion": 1,
+      "service": "neteasemusic",
+      "label": "网易云音乐",
+      "icon": "🎵",
+      "color": "#ef4444",
+      "primaryEntities": [
+        "music",
+        "song",
+        "album"
+      ],
+      "generatedAt": "2026-08-29T12:00:00Z",
+      "entries": [
+        {
+          "key": "neteasemusic:music:sample-1",
+          "entityType": "music",
+          "entityId": "sample-1",
+          "title": "网易云音乐 示例 1",
+          "path": "services/neteasemusic/music/sample-1.md",
+          "updatedAt": "2026-08-24T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-24"
+            },
+            "dimensions": {
+              "category": "学习"
+            },
+            "measures": {
+              "durationMinutes": 15
+            },
+            "media": {}
+          }
+        },
+        {
+          "key": "neteasemusic:music:sample-2",
+          "entityType": "music",
+          "entityId": "sample-2",
+          "title": "网易云音乐 示例 2",
+          "path": "services/neteasemusic/music/sample-2.md",
+          "updatedAt": "2026-08-25T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-25"
+            },
+            "dimensions": {
+              "category": "收藏"
+            },
+            "measures": {
+              "durationMinutes": 30
+            },
+            "media": {}
+          }
+        },
+        {
+          "key": "neteasemusic:music:sample-3",
+          "entityType": "music",
+          "entityId": "sample-3",
+          "title": "网易云音乐 示例 3",
+          "path": "services/neteasemusic/music/sample-3.md",
+          "updatedAt": "2026-08-26T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-26"
+            },
+            "dimensions": {
+              "category": "生活"
+            },
+            "measures": {
+              "durationMinutes": 45
+            },
+            "media": {}
+          }
+        },
+        {
+          "key": "neteasemusic:music:sample-4",
+          "entityType": "music",
+          "entityId": "sample-4",
+          "title": "网易云音乐 示例 4",
+          "path": "services/neteasemusic/music/sample-4.md",
+          "updatedAt": "2026-08-27T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-27"
+            },
+            "dimensions": {
+              "category": "学习"
+            },
+            "measures": {
+              "durationMinutes": 60
+            },
+            "media": {}
+          }
+        }
+      ]
+    },
+    "analytics": {
+      "schemaVersion": 1,
+      "service": "neteasemusic",
+      "generatedAt": "2026-08-29T12:00:00Z",
+      "series": [
+        {
+          "key": "total:music",
+          "kind": "kpi",
+          "label": "music",
+          "unit": "条",
+          "points": [
+            {
+              "key": "music",
+              "value": 4
+            }
+          ]
+        },
+        {
+          "key": "sum:durationMinutes",
+          "kind": "kpi",
+          "label": "durationMinutes",
+          "unit": "分钟",
+          "points": [
+            {
+              "key": "durationMinutes",
+              "value": 150
+            }
+          ]
+        },
+        {
+          "key": "heatmap:occurredAt",
+          "kind": "heatmap",
+          "label": "occurredAt",
+          "unit": "分钟",
+          "points": [
+            {
+              "key": "2026-08-24",
+              "value": 8
+            },
+            {
+              "key": "2026-08-25",
+              "value": 16
+            },
+            {
+              "key": "2026-08-26",
+              "value": 24
+            },
+            {
+              "key": "2026-08-27",
+              "value": 32
+            },
+            {
+              "key": "2026-08-28",
+              "value": 40
+            },
+            {
+              "key": "2026-08-29",
+              "value": 48
+            }
+          ]
+        },
+        {
+          "key": "category:category",
+          "kind": "category",
+          "label": "category",
+          "unit": "次",
+          "points": [
+            {
+              "key": "学习",
+              "value": 7
+            },
+            {
+              "key": "收藏",
+              "value": 5
+            },
+            {
+              "key": "生活",
+              "value": 3
+            }
+          ]
+        },
+        {
+          "key": "monthly:durationMinutes",
+          "kind": "timeSeries",
+          "label": "durationMinutes",
+          "unit": "分钟",
+          "points": [
+            {
+              "key": "2026-04",
+              "value": 40
+            },
+            {
+              "key": "2026-05",
+              "value": 64
+            },
+            {
+              "key": "2026-06",
+              "value": 88
+            },
+            {
+              "key": "2026-07",
+              "value": 112
+            },
+            {
+              "key": "2026-08",
+              "value": 136
+            }
+          ]
+        },
+        {
+          "key": "category:artist",
+          "kind": "category",
+          "label": "artist",
+          "unit": "",
+          "points": [
+            {
+              "key": "示例 A",
+              "value": 7
+            },
+            {
+              "key": "示例 B",
+              "value": 4
+            },
+            {
+              "key": "示例 C",
+              "value": 2
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "forest": {
+    "catalog": {
+      "schemaVersion": 1,
+      "service": "forest",
+      "label": "Forest",
+      "icon": "🌳",
+      "color": "#16a34a",
+      "primaryEntities": [
+        "notes",
+        "plant",
+        "tree"
+      ],
+      "generatedAt": "2026-08-29T12:00:00Z",
+      "entries": [
+        {
+          "key": "forest:notes:sample-1",
+          "entityType": "notes",
+          "entityId": "sample-1",
+          "title": "Forest 示例 1",
+          "path": "services/forest/notes/sample-1.md",
+          "updatedAt": "2026-08-24T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-24"
+            },
+            "dimensions": {
+              "category": "学习"
+            },
+            "measures": {
+              "durationMinutes": 15
+            },
+            "media": {}
+          }
+        },
+        {
+          "key": "forest:notes:sample-2",
+          "entityType": "notes",
+          "entityId": "sample-2",
+          "title": "Forest 示例 2",
+          "path": "services/forest/notes/sample-2.md",
+          "updatedAt": "2026-08-25T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-25"
+            },
+            "dimensions": {
+              "category": "收藏"
+            },
+            "measures": {
+              "durationMinutes": 30
+            },
+            "media": {}
+          }
+        },
+        {
+          "key": "forest:notes:sample-3",
+          "entityType": "notes",
+          "entityId": "sample-3",
+          "title": "Forest 示例 3",
+          "path": "services/forest/notes/sample-3.md",
+          "updatedAt": "2026-08-26T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-26"
+            },
+            "dimensions": {
+              "category": "生活"
+            },
+            "measures": {
+              "durationMinutes": 45
+            },
+            "media": {}
+          }
+        },
+        {
+          "key": "forest:notes:sample-4",
+          "entityType": "notes",
+          "entityId": "sample-4",
+          "title": "Forest 示例 4",
+          "path": "services/forest/notes/sample-4.md",
+          "updatedAt": "2026-08-27T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-27"
+            },
+            "dimensions": {
+              "category": "学习"
+            },
+            "measures": {
+              "durationMinutes": 60
+            },
+            "media": {}
+          }
+        }
+      ]
+    },
+    "analytics": {
+      "schemaVersion": 1,
+      "service": "forest",
+      "generatedAt": "2026-08-29T12:00:00Z",
+      "series": [
+        {
+          "key": "total:notes",
+          "kind": "kpi",
+          "label": "notes",
+          "unit": "条",
+          "points": [
+            {
+              "key": "notes",
+              "value": 4
+            }
+          ]
+        },
+        {
+          "key": "sum:durationMinutes",
+          "kind": "kpi",
+          "label": "durationMinutes",
+          "unit": "分钟",
+          "points": [
+            {
+              "key": "durationMinutes",
+              "value": 150
+            }
+          ]
+        },
+        {
+          "key": "heatmap:occurredAt",
+          "kind": "heatmap",
+          "label": "occurredAt",
+          "unit": "分钟",
+          "points": [
+            {
+              "key": "2026-08-24",
+              "value": 8
+            },
+            {
+              "key": "2026-08-25",
+              "value": 16
+            },
+            {
+              "key": "2026-08-26",
+              "value": 24
+            },
+            {
+              "key": "2026-08-27",
+              "value": 32
+            },
+            {
+              "key": "2026-08-28",
+              "value": 40
+            },
+            {
+              "key": "2026-08-29",
+              "value": 48
+            }
+          ]
+        },
+        {
+          "key": "category:category",
+          "kind": "category",
+          "label": "category",
+          "unit": "次",
+          "points": [
+            {
+              "key": "学习",
+              "value": 7
+            },
+            {
+              "key": "收藏",
+              "value": 5
+            },
+            {
+              "key": "生活",
+              "value": 3
+            }
+          ]
+        },
+        {
+          "key": "monthly:durationMinutes",
+          "kind": "timeSeries",
+          "label": "durationMinutes",
+          "unit": "分钟",
+          "points": [
+            {
+              "key": "2026-04",
+              "value": 40
+            },
+            {
+              "key": "2026-05",
+              "value": 64
+            },
+            {
+              "key": "2026-06",
+              "value": 88
+            },
+            {
+              "key": "2026-07",
+              "value": 112
+            },
+            {
+              "key": "2026-08",
+              "value": 136
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "toggl": {
+    "catalog": {
+      "schemaVersion": 1,
+      "service": "toggl",
+      "label": "Toggl",
+      "icon": "⏱️",
+      "color": "#e11d48",
+      "primaryEntities": [
+        "time",
+        "time_entry"
+      ],
+      "generatedAt": "2026-08-29T12:00:00Z",
+      "entries": [
+        {
+          "key": "toggl:time:sample-1",
+          "entityType": "time",
+          "entityId": "sample-1",
+          "title": "Toggl 示例 1",
+          "path": "services/toggl/time/sample-1.md",
+          "updatedAt": "2026-08-24T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-24"
+            },
+            "dimensions": {
+              "category": "学习"
+            },
+            "measures": {
+              "durationMinutes": 15
+            },
+            "media": {}
+          }
+        },
+        {
+          "key": "toggl:time:sample-2",
+          "entityType": "time",
+          "entityId": "sample-2",
+          "title": "Toggl 示例 2",
+          "path": "services/toggl/time/sample-2.md",
+          "updatedAt": "2026-08-25T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-25"
+            },
+            "dimensions": {
+              "category": "收藏"
+            },
+            "measures": {
+              "durationMinutes": 30
+            },
+            "media": {}
+          }
+        },
+        {
+          "key": "toggl:time:sample-3",
+          "entityType": "time",
+          "entityId": "sample-3",
+          "title": "Toggl 示例 3",
+          "path": "services/toggl/time/sample-3.md",
+          "updatedAt": "2026-08-26T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-26"
+            },
+            "dimensions": {
+              "category": "生活"
+            },
+            "measures": {
+              "durationMinutes": 45
+            },
+            "media": {}
+          }
+        },
+        {
+          "key": "toggl:time:sample-4",
+          "entityType": "time",
+          "entityId": "sample-4",
+          "title": "Toggl 示例 4",
+          "path": "services/toggl/time/sample-4.md",
+          "updatedAt": "2026-08-27T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-27"
+            },
+            "dimensions": {
+              "category": "学习"
+            },
+            "measures": {
+              "durationMinutes": 60
+            },
+            "media": {}
+          }
+        }
+      ]
+    },
+    "analytics": {
+      "schemaVersion": 1,
+      "service": "toggl",
+      "generatedAt": "2026-08-29T12:00:00Z",
+      "series": [
+        {
+          "key": "total:time",
+          "kind": "kpi",
+          "label": "time",
+          "unit": "条",
+          "points": [
+            {
+              "key": "time",
+              "value": 4
+            }
+          ]
+        },
+        {
+          "key": "sum:durationMinutes",
+          "kind": "kpi",
+          "label": "durationMinutes",
+          "unit": "分钟",
+          "points": [
+            {
+              "key": "durationMinutes",
+              "value": 150
+            }
+          ]
+        },
+        {
+          "key": "heatmap:occurredAt",
+          "kind": "heatmap",
+          "label": "occurredAt",
+          "unit": "分钟",
+          "points": [
+            {
+              "key": "2026-08-24",
+              "value": 8
+            },
+            {
+              "key": "2026-08-25",
+              "value": 16
+            },
+            {
+              "key": "2026-08-26",
+              "value": 24
+            },
+            {
+              "key": "2026-08-27",
+              "value": 32
+            },
+            {
+              "key": "2026-08-28",
+              "value": 40
+            },
+            {
+              "key": "2026-08-29",
+              "value": 48
+            }
+          ]
+        },
+        {
+          "key": "category:category",
+          "kind": "category",
+          "label": "category",
+          "unit": "次",
+          "points": [
+            {
+              "key": "学习",
+              "value": 7
+            },
+            {
+              "key": "收藏",
+              "value": 5
+            },
+            {
+              "key": "生活",
+              "value": 3
+            }
+          ]
+        },
+        {
+          "key": "monthly:durationMinutes",
+          "kind": "timeSeries",
+          "label": "durationMinutes",
+          "unit": "分钟",
+          "points": [
+            {
+              "key": "2026-04",
+              "value": 40
+            },
+            {
+              "key": "2026-05",
+              "value": 64
+            },
+            {
+              "key": "2026-06",
+              "value": 88
+            },
+            {
+              "key": "2026-07",
+              "value": 112
+            },
+            {
+              "key": "2026-08",
+              "value": 136
+            }
+          ]
+        },
+        {
+          "key": "category:project",
+          "kind": "category",
+          "label": "project",
+          "unit": "",
+          "points": [
+            {
+              "key": "示例 A",
+              "value": 7
+            },
+            {
+              "key": "示例 B",
+              "value": 4
+            },
+            {
+              "key": "示例 C",
+              "value": 2
+            }
+          ]
+        },
+        {
+          "key": "category:client",
+          "kind": "category",
+          "label": "client",
+          "unit": "",
+          "points": [
+            {
+              "key": "示例 A",
+              "value": 7
+            },
+            {
+              "key": "示例 B",
+              "value": 4
+            },
+            {
+              "key": "示例 C",
+              "value": 2
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "applemusic": {
+    "catalog": {
+      "schemaVersion": 1,
+      "service": "applemusic",
+      "label": "Apple Music",
+      "icon": "🎶",
+      "color": "#fa2d48",
+      "primaryEntities": [
+        "music",
+        "song",
+        "album"
+      ],
+      "generatedAt": "2026-08-29T12:00:00Z",
+      "entries": [
+        {
+          "key": "applemusic:music:sample-1",
+          "entityType": "music",
+          "entityId": "sample-1",
+          "title": "Apple Music 示例 1",
+          "path": "services/applemusic/music/sample-1.md",
+          "updatedAt": "2026-08-24T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-24"
+            },
+            "dimensions": {
+              "category": "学习"
+            },
+            "measures": {
+              "durationMinutes": 15
+            },
+            "media": {}
+          }
+        },
+        {
+          "key": "applemusic:music:sample-2",
+          "entityType": "music",
+          "entityId": "sample-2",
+          "title": "Apple Music 示例 2",
+          "path": "services/applemusic/music/sample-2.md",
+          "updatedAt": "2026-08-25T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-25"
+            },
+            "dimensions": {
+              "category": "收藏"
+            },
+            "measures": {
+              "durationMinutes": 30
+            },
+            "media": {}
+          }
+        },
+        {
+          "key": "applemusic:music:sample-3",
+          "entityType": "music",
+          "entityId": "sample-3",
+          "title": "Apple Music 示例 3",
+          "path": "services/applemusic/music/sample-3.md",
+          "updatedAt": "2026-08-26T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-26"
+            },
+            "dimensions": {
+              "category": "生活"
+            },
+            "measures": {
+              "durationMinutes": 45
+            },
+            "media": {}
+          }
+        },
+        {
+          "key": "applemusic:music:sample-4",
+          "entityType": "music",
+          "entityId": "sample-4",
+          "title": "Apple Music 示例 4",
+          "path": "services/applemusic/music/sample-4.md",
+          "updatedAt": "2026-08-27T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-27"
+            },
+            "dimensions": {
+              "category": "学习"
+            },
+            "measures": {
+              "durationMinutes": 60
+            },
+            "media": {}
+          }
+        }
+      ]
+    },
+    "analytics": {
+      "schemaVersion": 1,
+      "service": "applemusic",
+      "generatedAt": "2026-08-29T12:00:00Z",
+      "series": [
+        {
+          "key": "total:music",
+          "kind": "kpi",
+          "label": "music",
+          "unit": "条",
+          "points": [
+            {
+              "key": "music",
+              "value": 4
+            }
+          ]
+        },
+        {
+          "key": "sum:durationMinutes",
+          "kind": "kpi",
+          "label": "durationMinutes",
+          "unit": "分钟",
+          "points": [
+            {
+              "key": "durationMinutes",
+              "value": 150
+            }
+          ]
+        },
+        {
+          "key": "heatmap:occurredAt",
+          "kind": "heatmap",
+          "label": "occurredAt",
+          "unit": "分钟",
+          "points": [
+            {
+              "key": "2026-08-24",
+              "value": 8
+            },
+            {
+              "key": "2026-08-25",
+              "value": 16
+            },
+            {
+              "key": "2026-08-26",
+              "value": 24
+            },
+            {
+              "key": "2026-08-27",
+              "value": 32
+            },
+            {
+              "key": "2026-08-28",
+              "value": 40
+            },
+            {
+              "key": "2026-08-29",
+              "value": 48
+            }
+          ]
+        },
+        {
+          "key": "category:category",
+          "kind": "category",
+          "label": "category",
+          "unit": "次",
+          "points": [
+            {
+              "key": "学习",
+              "value": 7
+            },
+            {
+              "key": "收藏",
+              "value": 5
+            },
+            {
+              "key": "生活",
+              "value": 3
+            }
+          ]
+        },
+        {
+          "key": "monthly:durationMinutes",
+          "kind": "timeSeries",
+          "label": "durationMinutes",
+          "unit": "分钟",
+          "points": [
+            {
+              "key": "2026-04",
+              "value": 40
+            },
+            {
+              "key": "2026-05",
+              "value": 64
+            },
+            {
+              "key": "2026-06",
+              "value": 88
+            },
+            {
+              "key": "2026-07",
+              "value": 112
+            },
+            {
+              "key": "2026-08",
+              "value": 136
+            }
+          ]
+        },
+        {
+          "key": "category:artist",
+          "kind": "category",
+          "label": "artist",
+          "unit": "",
+          "points": [
+            {
+              "key": "示例 A",
+              "value": 7
+            },
+            {
+              "key": "示例 B",
+              "value": 4
+            },
+            {
+              "key": "示例 C",
+              "value": 2
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "strava": {
+    "catalog": {
+      "schemaVersion": 1,
+      "service": "strava",
+      "label": "Strava",
+      "icon": "🚴",
+      "color": "#fc4c02",
+      "primaryEntities": [
+        "workout",
+        "activity"
+      ],
+      "generatedAt": "2026-08-29T12:00:00Z",
+      "entries": [
+        {
+          "key": "strava:workout:sample-1",
+          "entityType": "workout",
+          "entityId": "sample-1",
+          "title": "Strava 示例 1",
+          "path": "services/strava/workout/sample-1.md",
+          "updatedAt": "2026-08-24T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-24"
+            },
+            "dimensions": {
+              "category": "学习"
+            },
+            "measures": {
+              "durationMinutes": 15
+            },
+            "media": {}
+          }
+        },
+        {
+          "key": "strava:workout:sample-2",
+          "entityType": "workout",
+          "entityId": "sample-2",
+          "title": "Strava 示例 2",
+          "path": "services/strava/workout/sample-2.md",
+          "updatedAt": "2026-08-25T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-25"
+            },
+            "dimensions": {
+              "category": "收藏"
+            },
+            "measures": {
+              "durationMinutes": 30
+            },
+            "media": {}
+          }
+        },
+        {
+          "key": "strava:workout:sample-3",
+          "entityType": "workout",
+          "entityId": "sample-3",
+          "title": "Strava 示例 3",
+          "path": "services/strava/workout/sample-3.md",
+          "updatedAt": "2026-08-26T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-26"
+            },
+            "dimensions": {
+              "category": "生活"
+            },
+            "measures": {
+              "durationMinutes": 45
+            },
+            "media": {}
+          }
+        },
+        {
+          "key": "strava:workout:sample-4",
+          "entityType": "workout",
+          "entityId": "sample-4",
+          "title": "Strava 示例 4",
+          "path": "services/strava/workout/sample-4.md",
+          "updatedAt": "2026-08-27T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-27"
+            },
+            "dimensions": {
+              "category": "学习"
+            },
+            "measures": {
+              "durationMinutes": 60
+            },
+            "media": {}
+          }
+        }
+      ]
+    },
+    "analytics": {
+      "schemaVersion": 1,
+      "service": "strava",
+      "generatedAt": "2026-08-29T12:00:00Z",
+      "series": [
+        {
+          "key": "total:workout",
+          "kind": "kpi",
+          "label": "workout",
+          "unit": "条",
+          "points": [
+            {
+              "key": "workout",
+              "value": 4
+            }
+          ]
+        },
+        {
+          "key": "sum:durationMinutes",
+          "kind": "kpi",
+          "label": "durationMinutes",
+          "unit": "分钟",
+          "points": [
+            {
+              "key": "durationMinutes",
+              "value": 150
+            }
+          ]
+        },
+        {
+          "key": "heatmap:occurredAt",
+          "kind": "heatmap",
+          "label": "occurredAt",
+          "unit": "分钟",
+          "points": [
+            {
+              "key": "2026-08-24",
+              "value": 8
+            },
+            {
+              "key": "2026-08-25",
+              "value": 16
+            },
+            {
+              "key": "2026-08-26",
+              "value": 24
+            },
+            {
+              "key": "2026-08-27",
+              "value": 32
+            },
+            {
+              "key": "2026-08-28",
+              "value": 40
+            },
+            {
+              "key": "2026-08-29",
+              "value": 48
+            }
+          ]
+        },
+        {
+          "key": "category:category",
+          "kind": "category",
+          "label": "category",
+          "unit": "次",
+          "points": [
+            {
+              "key": "学习",
+              "value": 7
+            },
+            {
+              "key": "收藏",
+              "value": 5
+            },
+            {
+              "key": "生活",
+              "value": 3
+            }
+          ]
+        },
+        {
+          "key": "monthly:durationMinutes",
+          "kind": "timeSeries",
+          "label": "durationMinutes",
+          "unit": "分钟",
+          "points": [
+            {
+              "key": "2026-04",
+              "value": 40
+            },
+            {
+              "key": "2026-05",
+              "value": 64
+            },
+            {
+              "key": "2026-06",
+              "value": 88
+            },
+            {
+              "key": "2026-07",
+              "value": 112
+            },
+            {
+              "key": "2026-08",
+              "value": 136
+            }
+          ]
+        },
+        {
+          "key": "monthly:distanceKm",
+          "kind": "timeSeries",
+          "label": "distanceKm",
+          "unit": "分钟",
+          "points": [
+            {
+              "key": "2026-04",
+              "value": 20
+            },
+            {
+              "key": "2026-05",
+              "value": 35
+            },
+            {
+              "key": "2026-06",
+              "value": 50
+            },
+            {
+              "key": "2026-07",
+              "value": 65
+            },
+            {
+              "key": "2026-08",
+              "value": 80
+            }
+          ]
+        },
+        {
+          "key": "category:type",
+          "kind": "category",
+          "label": "type",
+          "unit": "",
+          "points": [
+            {
+              "key": "示例 A",
+              "value": 7
+            },
+            {
+              "key": "示例 B",
+              "value": 4
+            },
+            {
+              "key": "示例 C",
+              "value": 2
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "trakt": {
+    "catalog": {
+      "schemaVersion": 1,
+      "service": "trakt",
+      "label": "Trakt",
+      "icon": "🍿",
+      "color": "#ed1c24",
+      "primaryEntities": [
+        "movie",
+        "show",
+        "episode"
+      ],
+      "generatedAt": "2026-08-29T12:00:00Z",
+      "entries": [
+        {
+          "key": "trakt:movie:sample-1",
+          "entityType": "movie",
+          "entityId": "sample-1",
+          "title": "Trakt 示例 1",
+          "path": "services/trakt/movie/sample-1.md",
+          "updatedAt": "2026-08-24T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-24"
+            },
+            "dimensions": {
+              "category": "学习"
+            },
+            "measures": {
+              "durationMinutes": 15
+            },
+            "media": {}
+          }
+        },
+        {
+          "key": "trakt:movie:sample-2",
+          "entityType": "movie",
+          "entityId": "sample-2",
+          "title": "Trakt 示例 2",
+          "path": "services/trakt/movie/sample-2.md",
+          "updatedAt": "2026-08-25T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-25"
+            },
+            "dimensions": {
+              "category": "收藏"
+            },
+            "measures": {
+              "durationMinutes": 30
+            },
+            "media": {}
+          }
+        },
+        {
+          "key": "trakt:movie:sample-3",
+          "entityType": "movie",
+          "entityId": "sample-3",
+          "title": "Trakt 示例 3",
+          "path": "services/trakt/movie/sample-3.md",
+          "updatedAt": "2026-08-26T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-26"
+            },
+            "dimensions": {
+              "category": "生活"
+            },
+            "measures": {
+              "durationMinutes": 45
+            },
+            "media": {}
+          }
+        },
+        {
+          "key": "trakt:movie:sample-4",
+          "entityType": "movie",
+          "entityId": "sample-4",
+          "title": "Trakt 示例 4",
+          "path": "services/trakt/movie/sample-4.md",
+          "updatedAt": "2026-08-27T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-27"
+            },
+            "dimensions": {
+              "category": "学习"
+            },
+            "measures": {
+              "durationMinutes": 60
+            },
+            "media": {}
+          }
+        }
+      ]
+    },
+    "analytics": {
+      "schemaVersion": 1,
+      "service": "trakt",
+      "generatedAt": "2026-08-29T12:00:00Z",
+      "series": [
+        {
+          "key": "total:movie",
+          "kind": "kpi",
+          "label": "movie",
+          "unit": "条",
+          "points": [
+            {
+              "key": "movie",
+              "value": 4
+            }
+          ]
+        },
+        {
+          "key": "sum:durationMinutes",
+          "kind": "kpi",
+          "label": "durationMinutes",
+          "unit": "分钟",
+          "points": [
+            {
+              "key": "durationMinutes",
+              "value": 150
+            }
+          ]
+        },
+        {
+          "key": "heatmap:occurredAt",
+          "kind": "heatmap",
+          "label": "occurredAt",
+          "unit": "分钟",
+          "points": [
+            {
+              "key": "2026-08-24",
+              "value": 8
+            },
+            {
+              "key": "2026-08-25",
+              "value": 16
+            },
+            {
+              "key": "2026-08-26",
+              "value": 24
+            },
+            {
+              "key": "2026-08-27",
+              "value": 32
+            },
+            {
+              "key": "2026-08-28",
+              "value": 40
+            },
+            {
+              "key": "2026-08-29",
+              "value": 48
+            }
+          ]
+        },
+        {
+          "key": "category:category",
+          "kind": "category",
+          "label": "category",
+          "unit": "次",
+          "points": [
+            {
+              "key": "学习",
+              "value": 7
+            },
+            {
+              "key": "收藏",
+              "value": 5
+            },
+            {
+              "key": "生活",
+              "value": 3
+            }
+          ]
+        },
+        {
+          "key": "monthly:durationMinutes",
+          "kind": "timeSeries",
+          "label": "durationMinutes",
+          "unit": "分钟",
+          "points": [
+            {
+              "key": "2026-04",
+              "value": 40
+            },
+            {
+              "key": "2026-05",
+              "value": 64
+            },
+            {
+              "key": "2026-06",
+              "value": 88
+            },
+            {
+              "key": "2026-07",
+              "value": 112
+            },
+            {
+              "key": "2026-08",
+              "value": 136
+            }
+          ]
+        },
+        {
+          "key": "category:rating",
+          "kind": "category",
+          "label": "rating",
+          "unit": "",
+          "points": [
+            {
+              "key": "示例 A",
+              "value": 7
+            },
+            {
+              "key": "示例 B",
+              "value": 4
+            },
+            {
+              "key": "示例 C",
+              "value": 2
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "youtube": {
+    "catalog": {
+      "schemaVersion": 1,
+      "service": "youtube",
+      "label": "YouTube",
+      "icon": "▶️",
+      "color": "#ff0000",
+      "primaryEntities": [
+        "video",
+        "bilibili"
+      ],
+      "generatedAt": "2026-08-29T12:00:00Z",
+      "entries": [
+        {
+          "key": "youtube:video:sample-1",
+          "entityType": "video",
+          "entityId": "sample-1",
+          "title": "YouTube 示例 1",
+          "path": "services/youtube/video/sample-1.md",
+          "updatedAt": "2026-08-24T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-24"
+            },
+            "dimensions": {
+              "category": "学习"
+            },
+            "measures": {
+              "durationMinutes": 15
+            },
+            "media": {}
+          }
+        },
+        {
+          "key": "youtube:video:sample-2",
+          "entityType": "video",
+          "entityId": "sample-2",
+          "title": "YouTube 示例 2",
+          "path": "services/youtube/video/sample-2.md",
+          "updatedAt": "2026-08-25T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-25"
+            },
+            "dimensions": {
+              "category": "收藏"
+            },
+            "measures": {
+              "durationMinutes": 30
+            },
+            "media": {}
+          }
+        },
+        {
+          "key": "youtube:video:sample-3",
+          "entityType": "video",
+          "entityId": "sample-3",
+          "title": "YouTube 示例 3",
+          "path": "services/youtube/video/sample-3.md",
+          "updatedAt": "2026-08-26T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-26"
+            },
+            "dimensions": {
+              "category": "生活"
+            },
+            "measures": {
+              "durationMinutes": 45
+            },
+            "media": {}
+          }
+        },
+        {
+          "key": "youtube:video:sample-4",
+          "entityType": "video",
+          "entityId": "sample-4",
+          "title": "YouTube 示例 4",
+          "path": "services/youtube/video/sample-4.md",
+          "updatedAt": "2026-08-27T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-27"
+            },
+            "dimensions": {
+              "category": "学习"
+            },
+            "measures": {
+              "durationMinutes": 60
+            },
+            "media": {}
+          }
+        }
+      ]
+    },
+    "analytics": {
+      "schemaVersion": 1,
+      "service": "youtube",
+      "generatedAt": "2026-08-29T12:00:00Z",
+      "series": [
+        {
+          "key": "total:video",
+          "kind": "kpi",
+          "label": "video",
+          "unit": "条",
+          "points": [
+            {
+              "key": "video",
+              "value": 4
+            }
+          ]
+        },
+        {
+          "key": "sum:durationMinutes",
+          "kind": "kpi",
+          "label": "durationMinutes",
+          "unit": "分钟",
+          "points": [
+            {
+              "key": "durationMinutes",
+              "value": 150
+            }
+          ]
+        },
+        {
+          "key": "heatmap:occurredAt",
+          "kind": "heatmap",
+          "label": "occurredAt",
+          "unit": "分钟",
+          "points": [
+            {
+              "key": "2026-08-24",
+              "value": 8
+            },
+            {
+              "key": "2026-08-25",
+              "value": 16
+            },
+            {
+              "key": "2026-08-26",
+              "value": 24
+            },
+            {
+              "key": "2026-08-27",
+              "value": 32
+            },
+            {
+              "key": "2026-08-28",
+              "value": 40
+            },
+            {
+              "key": "2026-08-29",
+              "value": 48
+            }
+          ]
+        },
+        {
+          "key": "category:category",
+          "kind": "category",
+          "label": "category",
+          "unit": "次",
+          "points": [
+            {
+              "key": "学习",
+              "value": 7
+            },
+            {
+              "key": "收藏",
+              "value": 5
+            },
+            {
+              "key": "生活",
+              "value": 3
+            }
+          ]
+        },
+        {
+          "key": "monthly:durationMinutes",
+          "kind": "timeSeries",
+          "label": "durationMinutes",
+          "unit": "分钟",
+          "points": [
+            {
+              "key": "2026-04",
+              "value": 40
+            },
+            {
+              "key": "2026-05",
+              "value": 64
+            },
+            {
+              "key": "2026-06",
+              "value": 88
+            },
+            {
+              "key": "2026-07",
+              "value": 112
+            },
+            {
+              "key": "2026-08",
+              "value": 136
+            }
+          ]
+        },
+        {
+          "key": "category:author",
+          "kind": "category",
+          "label": "author",
+          "unit": "",
+          "points": [
+            {
+              "key": "示例 A",
+              "value": 7
+            },
+            {
+              "key": "示例 B",
+              "value": 4
+            },
+            {
+              "key": "示例 C",
+              "value": 2
+            }
+          ]
+        },
+        {
+          "key": "category:playlist",
+          "kind": "category",
+          "label": "playlist",
+          "unit": "",
+          "points": [
+            {
+              "key": "示例 A",
+              "value": 7
+            },
+            {
+              "key": "示例 B",
+              "value": 4
+            },
+            {
+              "key": "示例 C",
+              "value": 2
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "spotify": {
+    "catalog": {
+      "schemaVersion": 1,
+      "service": "spotify",
+      "label": "Spotify",
+      "icon": "🎼",
+      "color": "#1db954",
+      "primaryEntities": [
+        "music",
+        "song",
+        "album"
+      ],
+      "generatedAt": "2026-08-29T12:00:00Z",
+      "entries": [
+        {
+          "key": "spotify:music:sample-1",
+          "entityType": "music",
+          "entityId": "sample-1",
+          "title": "Spotify 示例 1",
+          "path": "services/spotify/music/sample-1.md",
+          "updatedAt": "2026-08-24T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-24"
+            },
+            "dimensions": {
+              "category": "学习"
+            },
+            "measures": {
+              "durationMinutes": 15
+            },
+            "media": {}
+          }
+        },
+        {
+          "key": "spotify:music:sample-2",
+          "entityType": "music",
+          "entityId": "sample-2",
+          "title": "Spotify 示例 2",
+          "path": "services/spotify/music/sample-2.md",
+          "updatedAt": "2026-08-25T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-25"
+            },
+            "dimensions": {
+              "category": "收藏"
+            },
+            "measures": {
+              "durationMinutes": 30
+            },
+            "media": {}
+          }
+        },
+        {
+          "key": "spotify:music:sample-3",
+          "entityType": "music",
+          "entityId": "sample-3",
+          "title": "Spotify 示例 3",
+          "path": "services/spotify/music/sample-3.md",
+          "updatedAt": "2026-08-26T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-26"
+            },
+            "dimensions": {
+              "category": "生活"
+            },
+            "measures": {
+              "durationMinutes": 45
+            },
+            "media": {}
+          }
+        },
+        {
+          "key": "spotify:music:sample-4",
+          "entityType": "music",
+          "entityId": "sample-4",
+          "title": "Spotify 示例 4",
+          "path": "services/spotify/music/sample-4.md",
+          "updatedAt": "2026-08-27T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-27"
+            },
+            "dimensions": {
+              "category": "学习"
+            },
+            "measures": {
+              "durationMinutes": 60
+            },
+            "media": {}
+          }
+        }
+      ]
+    },
+    "analytics": {
+      "schemaVersion": 1,
+      "service": "spotify",
+      "generatedAt": "2026-08-29T12:00:00Z",
+      "series": [
+        {
+          "key": "total:music",
+          "kind": "kpi",
+          "label": "music",
+          "unit": "条",
+          "points": [
+            {
+              "key": "music",
+              "value": 4
+            }
+          ]
+        },
+        {
+          "key": "sum:durationMinutes",
+          "kind": "kpi",
+          "label": "durationMinutes",
+          "unit": "分钟",
+          "points": [
+            {
+              "key": "durationMinutes",
+              "value": 150
+            }
+          ]
+        },
+        {
+          "key": "heatmap:occurredAt",
+          "kind": "heatmap",
+          "label": "occurredAt",
+          "unit": "分钟",
+          "points": [
+            {
+              "key": "2026-08-24",
+              "value": 8
+            },
+            {
+              "key": "2026-08-25",
+              "value": 16
+            },
+            {
+              "key": "2026-08-26",
+              "value": 24
+            },
+            {
+              "key": "2026-08-27",
+              "value": 32
+            },
+            {
+              "key": "2026-08-28",
+              "value": 40
+            },
+            {
+              "key": "2026-08-29",
+              "value": 48
+            }
+          ]
+        },
+        {
+          "key": "category:category",
+          "kind": "category",
+          "label": "category",
+          "unit": "次",
+          "points": [
+            {
+              "key": "学习",
+              "value": 7
+            },
+            {
+              "key": "收藏",
+              "value": 5
+            },
+            {
+              "key": "生活",
+              "value": 3
+            }
+          ]
+        },
+        {
+          "key": "monthly:durationMinutes",
+          "kind": "timeSeries",
+          "label": "durationMinutes",
+          "unit": "分钟",
+          "points": [
+            {
+              "key": "2026-04",
+              "value": 40
+            },
+            {
+              "key": "2026-05",
+              "value": 64
+            },
+            {
+              "key": "2026-06",
+              "value": 88
+            },
+            {
+              "key": "2026-07",
+              "value": 112
+            },
+            {
+              "key": "2026-08",
+              "value": 136
+            }
+          ]
+        },
+        {
+          "key": "category:artist",
+          "kind": "category",
+          "label": "artist",
+          "unit": "",
+          "points": [
+            {
+              "key": "示例 A",
+              "value": 7
+            },
+            {
+              "key": "示例 B",
+              "value": 4
+            },
+            {
+              "key": "示例 C",
+              "value": 2
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "xiaohongshu": {
+    "catalog": {
+      "schemaVersion": 1,
+      "service": "xiaohongshu",
+      "label": "小红书",
+      "icon": "📕",
+      "color": "#ff2442",
+      "primaryEntities": [
+        "notes",
+        "memo"
+      ],
+      "generatedAt": "2026-08-29T12:00:00Z",
+      "entries": [
+        {
+          "key": "xiaohongshu:notes:sample-1",
+          "entityType": "notes",
+          "entityId": "sample-1",
+          "title": "小红书 示例 1",
+          "path": "services/xiaohongshu/notes/sample-1.md",
+          "updatedAt": "2026-08-24T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-24"
+            },
+            "dimensions": {
+              "category": "学习"
+            },
+            "measures": {
+              "durationMinutes": 15
+            },
+            "media": {}
+          }
+        },
+        {
+          "key": "xiaohongshu:notes:sample-2",
+          "entityType": "notes",
+          "entityId": "sample-2",
+          "title": "小红书 示例 2",
+          "path": "services/xiaohongshu/notes/sample-2.md",
+          "updatedAt": "2026-08-25T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-25"
+            },
+            "dimensions": {
+              "category": "收藏"
+            },
+            "measures": {
+              "durationMinutes": 30
+            },
+            "media": {}
+          }
+        },
+        {
+          "key": "xiaohongshu:notes:sample-3",
+          "entityType": "notes",
+          "entityId": "sample-3",
+          "title": "小红书 示例 3",
+          "path": "services/xiaohongshu/notes/sample-3.md",
+          "updatedAt": "2026-08-26T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-26"
+            },
+            "dimensions": {
+              "category": "生活"
+            },
+            "measures": {
+              "durationMinutes": 45
+            },
+            "media": {}
+          }
+        },
+        {
+          "key": "xiaohongshu:notes:sample-4",
+          "entityType": "notes",
+          "entityId": "sample-4",
+          "title": "小红书 示例 4",
+          "path": "services/xiaohongshu/notes/sample-4.md",
+          "updatedAt": "2026-08-27T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-27"
+            },
+            "dimensions": {
+              "category": "学习"
+            },
+            "measures": {
+              "durationMinutes": 60
+            },
+            "media": {}
+          }
+        }
+      ]
+    },
+    "analytics": {
+      "schemaVersion": 1,
+      "service": "xiaohongshu",
+      "generatedAt": "2026-08-29T12:00:00Z",
+      "series": [
+        {
+          "key": "total:notes",
+          "kind": "kpi",
+          "label": "notes",
+          "unit": "条",
+          "points": [
+            {
+              "key": "notes",
+              "value": 4
+            }
+          ]
+        },
+        {
+          "key": "sum:durationMinutes",
+          "kind": "kpi",
+          "label": "durationMinutes",
+          "unit": "分钟",
+          "points": [
+            {
+              "key": "durationMinutes",
+              "value": 150
+            }
+          ]
+        },
+        {
+          "key": "heatmap:occurredAt",
+          "kind": "heatmap",
+          "label": "occurredAt",
+          "unit": "分钟",
+          "points": [
+            {
+              "key": "2026-08-24",
+              "value": 8
+            },
+            {
+              "key": "2026-08-25",
+              "value": 16
+            },
+            {
+              "key": "2026-08-26",
+              "value": 24
+            },
+            {
+              "key": "2026-08-27",
+              "value": 32
+            },
+            {
+              "key": "2026-08-28",
+              "value": 40
+            },
+            {
+              "key": "2026-08-29",
+              "value": 48
+            }
+          ]
+        },
+        {
+          "key": "category:category",
+          "kind": "category",
+          "label": "category",
+          "unit": "次",
+          "points": [
+            {
+              "key": "学习",
+              "value": 7
+            },
+            {
+              "key": "收藏",
+              "value": 5
+            },
+            {
+              "key": "生活",
+              "value": 3
+            }
+          ]
+        },
+        {
+          "key": "monthly:durationMinutes",
+          "kind": "timeSeries",
+          "label": "durationMinutes",
+          "unit": "分钟",
+          "points": [
+            {
+              "key": "2026-04",
+              "value": 40
+            },
+            {
+              "key": "2026-05",
+              "value": 64
+            },
+            {
+              "key": "2026-06",
+              "value": 88
+            },
+            {
+              "key": "2026-07",
+              "value": 112
+            },
+            {
+              "key": "2026-08",
+              "value": 136
+            }
+          ]
+        },
+        {
+          "key": "category:author",
+          "kind": "category",
+          "label": "author",
+          "unit": "",
+          "points": [
+            {
+              "key": "示例 A",
+              "value": 7
+            },
+            {
+              "key": "示例 B",
+              "value": 4
+            },
+            {
+              "key": "示例 C",
+              "value": 2
+            }
+          ]
+        },
+        {
+          "key": "category:tags",
+          "kind": "category",
+          "label": "tags",
+          "unit": "",
+          "points": [
+            {
+              "key": "示例 A",
+              "value": 7
+            },
+            {
+              "key": "示例 B",
+              "value": 4
+            },
+            {
+              "key": "示例 C",
+              "value": 2
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "douyin": {
+    "catalog": {
+      "schemaVersion": 1,
+      "service": "douyin",
+      "label": "抖音",
+      "icon": "🎞️",
+      "color": "#111827",
+      "primaryEntities": [
+        "douyin",
+        "video"
+      ],
+      "generatedAt": "2026-08-29T12:00:00Z",
+      "entries": [
+        {
+          "key": "douyin:douyin:sample-1",
+          "entityType": "douyin",
+          "entityId": "sample-1",
+          "title": "抖音 示例 1",
+          "path": "services/douyin/douyin/sample-1.md",
+          "updatedAt": "2026-08-24T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-24"
+            },
+            "dimensions": {
+              "category": "学习"
+            },
+            "measures": {
+              "durationMinutes": 15
+            },
+            "media": {}
+          }
+        },
+        {
+          "key": "douyin:douyin:sample-2",
+          "entityType": "douyin",
+          "entityId": "sample-2",
+          "title": "抖音 示例 2",
+          "path": "services/douyin/douyin/sample-2.md",
+          "updatedAt": "2026-08-25T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-25"
+            },
+            "dimensions": {
+              "category": "收藏"
+            },
+            "measures": {
+              "durationMinutes": 30
+            },
+            "media": {}
+          }
+        },
+        {
+          "key": "douyin:douyin:sample-3",
+          "entityType": "douyin",
+          "entityId": "sample-3",
+          "title": "抖音 示例 3",
+          "path": "services/douyin/douyin/sample-3.md",
+          "updatedAt": "2026-08-26T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-26"
+            },
+            "dimensions": {
+              "category": "生活"
+            },
+            "measures": {
+              "durationMinutes": 45
+            },
+            "media": {}
+          }
+        },
+        {
+          "key": "douyin:douyin:sample-4",
+          "entityType": "douyin",
+          "entityId": "sample-4",
+          "title": "抖音 示例 4",
+          "path": "services/douyin/douyin/sample-4.md",
+          "updatedAt": "2026-08-27T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-27"
+            },
+            "dimensions": {
+              "category": "学习"
+            },
+            "measures": {
+              "durationMinutes": 60
+            },
+            "media": {}
+          }
+        }
+      ]
+    },
+    "analytics": {
+      "schemaVersion": 1,
+      "service": "douyin",
+      "generatedAt": "2026-08-29T12:00:00Z",
+      "series": [
+        {
+          "key": "total:douyin",
+          "kind": "kpi",
+          "label": "douyin",
+          "unit": "条",
+          "points": [
+            {
+              "key": "douyin",
+              "value": 4
+            }
+          ]
+        },
+        {
+          "key": "sum:durationMinutes",
+          "kind": "kpi",
+          "label": "durationMinutes",
+          "unit": "分钟",
+          "points": [
+            {
+              "key": "durationMinutes",
+              "value": 150
+            }
+          ]
+        },
+        {
+          "key": "heatmap:occurredAt",
+          "kind": "heatmap",
+          "label": "occurredAt",
+          "unit": "分钟",
+          "points": [
+            {
+              "key": "2026-08-24",
+              "value": 8
+            },
+            {
+              "key": "2026-08-25",
+              "value": 16
+            },
+            {
+              "key": "2026-08-26",
+              "value": 24
+            },
+            {
+              "key": "2026-08-27",
+              "value": 32
+            },
+            {
+              "key": "2026-08-28",
+              "value": 40
+            },
+            {
+              "key": "2026-08-29",
+              "value": 48
+            }
+          ]
+        },
+        {
+          "key": "category:category",
+          "kind": "category",
+          "label": "category",
+          "unit": "次",
+          "points": [
+            {
+              "key": "学习",
+              "value": 7
+            },
+            {
+              "key": "收藏",
+              "value": 5
+            },
+            {
+              "key": "生活",
+              "value": 3
+            }
+          ]
+        },
+        {
+          "key": "monthly:durationMinutes",
+          "kind": "timeSeries",
+          "label": "durationMinutes",
+          "unit": "分钟",
+          "points": [
+            {
+              "key": "2026-04",
+              "value": 40
+            },
+            {
+              "key": "2026-05",
+              "value": 64
+            },
+            {
+              "key": "2026-06",
+              "value": 88
+            },
+            {
+              "key": "2026-07",
+              "value": 112
+            },
+            {
+              "key": "2026-08",
+              "value": 136
+            }
+          ]
+        },
+        {
+          "key": "sum:likeCount",
+          "kind": "kpi",
+          "label": "likeCount",
+          "unit": "",
+          "points": [
+            {
+              "key": "likeCount",
+              "value": 42
+            }
+          ]
+        },
+        {
+          "key": "sum:commentCount",
+          "kind": "kpi",
+          "label": "commentCount",
+          "unit": "",
+          "points": [
+            {
+              "key": "commentCount",
+              "value": 42
+            }
+          ]
+        },
+        {
+          "key": "sum:shareCount",
+          "kind": "kpi",
+          "label": "shareCount",
+          "unit": "",
+          "points": [
+            {
+              "key": "shareCount",
+              "value": 42
+            }
+          ]
+        },
+        {
+          "key": "category:author",
+          "kind": "category",
+          "label": "author",
+          "unit": "",
+          "points": [
+            {
+              "key": "示例 A",
+              "value": 7
+            },
+            {
+              "key": "示例 B",
+              "value": 4
+            },
+            {
+              "key": "示例 C",
+              "value": 2
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "github": {
+    "catalog": {
+      "schemaVersion": 1,
+      "service": "github",
+      "label": "GitHub",
+      "icon": "🐙",
+      "color": "#6e5494",
+      "primaryEntities": [
+        "github_repository",
+        "repository"
+      ],
+      "generatedAt": "2026-08-29T12:00:00Z",
+      "entries": [
+        {
+          "key": "github:github_repository:sample-1",
+          "entityType": "github_repository",
+          "entityId": "sample-1",
+          "title": "GitHub 示例 1",
+          "path": "services/github/github_repository/sample-1.md",
+          "updatedAt": "2026-08-24T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-24"
+            },
+            "dimensions": {
+              "category": "学习"
+            },
+            "measures": {
+              "durationMinutes": 15
+            },
+            "media": {}
+          }
+        },
+        {
+          "key": "github:github_repository:sample-2",
+          "entityType": "github_repository",
+          "entityId": "sample-2",
+          "title": "GitHub 示例 2",
+          "path": "services/github/github_repository/sample-2.md",
+          "updatedAt": "2026-08-25T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-25"
+            },
+            "dimensions": {
+              "category": "收藏"
+            },
+            "measures": {
+              "durationMinutes": 30
+            },
+            "media": {}
+          }
+        },
+        {
+          "key": "github:github_repository:sample-3",
+          "entityType": "github_repository",
+          "entityId": "sample-3",
+          "title": "GitHub 示例 3",
+          "path": "services/github/github_repository/sample-3.md",
+          "updatedAt": "2026-08-26T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-26"
+            },
+            "dimensions": {
+              "category": "生活"
+            },
+            "measures": {
+              "durationMinutes": 45
+            },
+            "media": {}
+          }
+        },
+        {
+          "key": "github:github_repository:sample-4",
+          "entityType": "github_repository",
+          "entityId": "sample-4",
+          "title": "GitHub 示例 4",
+          "path": "services/github/github_repository/sample-4.md",
+          "updatedAt": "2026-08-27T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-27"
+            },
+            "dimensions": {
+              "category": "学习"
+            },
+            "measures": {
+              "durationMinutes": 60
+            },
+            "media": {}
+          }
+        }
+      ]
+    },
+    "analytics": {
+      "schemaVersion": 1,
+      "service": "github",
+      "generatedAt": "2026-08-29T12:00:00Z",
+      "series": [
+        {
+          "key": "total:github_repository",
+          "kind": "kpi",
+          "label": "github_repository",
+          "unit": "条",
+          "points": [
+            {
+              "key": "github_repository",
+              "value": 4
+            }
+          ]
+        },
+        {
+          "key": "sum:durationMinutes",
+          "kind": "kpi",
+          "label": "durationMinutes",
+          "unit": "分钟",
+          "points": [
+            {
+              "key": "durationMinutes",
+              "value": 150
+            }
+          ]
+        },
+        {
+          "key": "heatmap:occurredAt",
+          "kind": "heatmap",
+          "label": "occurredAt",
+          "unit": "分钟",
+          "points": [
+            {
+              "key": "2026-08-24",
+              "value": 8
+            },
+            {
+              "key": "2026-08-25",
+              "value": 16
+            },
+            {
+              "key": "2026-08-26",
+              "value": 24
+            },
+            {
+              "key": "2026-08-27",
+              "value": 32
+            },
+            {
+              "key": "2026-08-28",
+              "value": 40
+            },
+            {
+              "key": "2026-08-29",
+              "value": 48
+            }
+          ]
+        },
+        {
+          "key": "category:category",
+          "kind": "category",
+          "label": "category",
+          "unit": "次",
+          "points": [
+            {
+              "key": "学习",
+              "value": 7
+            },
+            {
+              "key": "收藏",
+              "value": 5
+            },
+            {
+              "key": "生活",
+              "value": 3
+            }
+          ]
+        },
+        {
+          "key": "monthly:durationMinutes",
+          "kind": "timeSeries",
+          "label": "durationMinutes",
+          "unit": "分钟",
+          "points": [
+            {
+              "key": "2026-04",
+              "value": 40
+            },
+            {
+              "key": "2026-05",
+              "value": 64
+            },
+            {
+              "key": "2026-06",
+              "value": 88
+            },
+            {
+              "key": "2026-07",
+              "value": 112
+            },
+            {
+              "key": "2026-08",
+              "value": 136
+            }
+          ]
+        },
+        {
+          "key": "sum:stars",
+          "kind": "kpi",
+          "label": "stars",
+          "unit": "",
+          "points": [
+            {
+              "key": "stars",
+              "value": 42
+            }
+          ]
+        },
+        {
+          "key": "sum:forks",
+          "kind": "kpi",
+          "label": "forks",
+          "unit": "",
+          "points": [
+            {
+              "key": "forks",
+              "value": 42
+            }
+          ]
+        },
+        {
+          "key": "category:language",
+          "kind": "category",
+          "label": "language",
+          "unit": "",
+          "points": [
+            {
+              "key": "示例 A",
+              "value": 7
+            },
+            {
+              "key": "示例 B",
+              "value": 4
+            },
+            {
+              "key": "示例 C",
+              "value": 2
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "guwendao": {
+    "catalog": {
+      "schemaVersion": 1,
+      "service": "guwendao",
+      "label": "古文岛",
+      "icon": "🏮",
+      "color": "#b45309",
+      "primaryEntities": [
+        "shiwen",
+        "annotation",
+        "beisong"
+      ],
+      "generatedAt": "2026-08-29T12:00:00Z",
+      "entries": [
+        {
+          "key": "guwendao:shiwen:sample-1",
+          "entityType": "shiwen",
+          "entityId": "sample-1",
+          "title": "古文岛 示例 1",
+          "path": "services/guwendao/shiwen/sample-1.md",
+          "updatedAt": "2026-08-24T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-24"
+            },
+            "dimensions": {
+              "category": "学习"
+            },
+            "measures": {
+              "durationMinutes": 15
+            },
+            "media": {}
+          }
+        },
+        {
+          "key": "guwendao:shiwen:sample-2",
+          "entityType": "shiwen",
+          "entityId": "sample-2",
+          "title": "古文岛 示例 2",
+          "path": "services/guwendao/shiwen/sample-2.md",
+          "updatedAt": "2026-08-25T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-25"
+            },
+            "dimensions": {
+              "category": "收藏"
+            },
+            "measures": {
+              "durationMinutes": 30
+            },
+            "media": {}
+          }
+        },
+        {
+          "key": "guwendao:shiwen:sample-3",
+          "entityType": "shiwen",
+          "entityId": "sample-3",
+          "title": "古文岛 示例 3",
+          "path": "services/guwendao/shiwen/sample-3.md",
+          "updatedAt": "2026-08-26T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-26"
+            },
+            "dimensions": {
+              "category": "生活"
+            },
+            "measures": {
+              "durationMinutes": 45
+            },
+            "media": {}
+          }
+        },
+        {
+          "key": "guwendao:shiwen:sample-4",
+          "entityType": "shiwen",
+          "entityId": "sample-4",
+          "title": "古文岛 示例 4",
+          "path": "services/guwendao/shiwen/sample-4.md",
+          "updatedAt": "2026-08-27T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-27"
+            },
+            "dimensions": {
+              "category": "学习"
+            },
+            "measures": {
+              "durationMinutes": 60
+            },
+            "media": {}
+          }
+        }
+      ]
+    },
+    "analytics": {
+      "schemaVersion": 1,
+      "service": "guwendao",
+      "generatedAt": "2026-08-29T12:00:00Z",
+      "series": [
+        {
+          "key": "total:shiwen",
+          "kind": "kpi",
+          "label": "shiwen",
+          "unit": "条",
+          "points": [
+            {
+              "key": "shiwen",
+              "value": 4
+            }
+          ]
+        },
+        {
+          "key": "sum:durationMinutes",
+          "kind": "kpi",
+          "label": "durationMinutes",
+          "unit": "分钟",
+          "points": [
+            {
+              "key": "durationMinutes",
+              "value": 150
+            }
+          ]
+        },
+        {
+          "key": "heatmap:occurredAt",
+          "kind": "heatmap",
+          "label": "occurredAt",
+          "unit": "分钟",
+          "points": [
+            {
+              "key": "2026-08-24",
+              "value": 8
+            },
+            {
+              "key": "2026-08-25",
+              "value": 16
+            },
+            {
+              "key": "2026-08-26",
+              "value": 24
+            },
+            {
+              "key": "2026-08-27",
+              "value": 32
+            },
+            {
+              "key": "2026-08-28",
+              "value": 40
+            },
+            {
+              "key": "2026-08-29",
+              "value": 48
+            }
+          ]
+        },
+        {
+          "key": "category:category",
+          "kind": "category",
+          "label": "category",
+          "unit": "次",
+          "points": [
+            {
+              "key": "学习",
+              "value": 7
+            },
+            {
+              "key": "收藏",
+              "value": 5
+            },
+            {
+              "key": "生活",
+              "value": 3
+            }
+          ]
+        },
+        {
+          "key": "monthly:durationMinutes",
+          "kind": "timeSeries",
+          "label": "durationMinutes",
+          "unit": "分钟",
+          "points": [
+            {
+              "key": "2026-04",
+              "value": 40
+            },
+            {
+              "key": "2026-05",
+              "value": 64
+            },
+            {
+              "key": "2026-06",
+              "value": 88
+            },
+            {
+              "key": "2026-07",
+              "value": 112
+            },
+            {
+              "key": "2026-08",
+              "value": 136
+            }
+          ]
+        },
+        {
+          "key": "category:author",
+          "kind": "category",
+          "label": "author",
+          "unit": "",
+          "points": [
+            {
+              "key": "示例 A",
+              "value": 7
+            },
+            {
+              "key": "示例 B",
+              "value": 4
+            },
+            {
+              "key": "示例 C",
+              "value": 2
+            }
+          ]
+        },
+        {
+          "key": "category:tags",
+          "kind": "category",
+          "label": "tags",
+          "unit": "",
+          "points": [
+            {
+              "key": "示例 A",
+              "value": 7
+            },
+            {
+              "key": "示例 B",
+              "value": 4
+            },
+            {
+              "key": "示例 C",
+              "value": 2
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "daily": {
+    "catalog": {
+      "schemaVersion": 1,
+      "service": "daily",
+      "label": "Daily",
+      "icon": "📅",
+      "color": "#0ea5e9",
+      "primaryEntities": [
+        "journal"
+      ],
+      "generatedAt": "2026-08-29T12:00:00Z",
+      "entries": [
+        {
+          "key": "daily:journal:sample-1",
+          "entityType": "journal",
+          "entityId": "sample-1",
+          "title": "Daily 示例 1",
+          "path": "services/daily/journal/sample-1.md",
+          "updatedAt": "2026-08-24T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-24"
+            },
+            "dimensions": {
+              "category": "学习"
+            },
+            "measures": {
+              "durationMinutes": 15
+            },
+            "media": {}
+          }
+        },
+        {
+          "key": "daily:journal:sample-2",
+          "entityType": "journal",
+          "entityId": "sample-2",
+          "title": "Daily 示例 2",
+          "path": "services/daily/journal/sample-2.md",
+          "updatedAt": "2026-08-25T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-25"
+            },
+            "dimensions": {
+              "category": "收藏"
+            },
+            "measures": {
+              "durationMinutes": 30
+            },
+            "media": {}
+          }
+        },
+        {
+          "key": "daily:journal:sample-3",
+          "entityType": "journal",
+          "entityId": "sample-3",
+          "title": "Daily 示例 3",
+          "path": "services/daily/journal/sample-3.md",
+          "updatedAt": "2026-08-26T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-26"
+            },
+            "dimensions": {
+              "category": "生活"
+            },
+            "measures": {
+              "durationMinutes": 45
+            },
+            "media": {}
+          }
+        },
+        {
+          "key": "daily:journal:sample-4",
+          "entityType": "journal",
+          "entityId": "sample-4",
+          "title": "Daily 示例 4",
+          "path": "services/daily/journal/sample-4.md",
+          "updatedAt": "2026-08-27T08:00:00Z",
+          "view": {
+            "schemaVersion": 1,
+            "dates": {
+              "occurredAt": "2026-08-27"
+            },
+            "dimensions": {
+              "category": "学习"
+            },
+            "measures": {
+              "durationMinutes": 60
+            },
+            "media": {}
+          }
+        }
+      ]
+    },
+    "analytics": {
+      "schemaVersion": 1,
+      "service": "daily",
+      "generatedAt": "2026-08-29T12:00:00Z",
+      "series": [
+        {
+          "key": "total:journal",
+          "kind": "kpi",
+          "label": "journal",
+          "unit": "条",
+          "points": [
+            {
+              "key": "journal",
+              "value": 4
+            }
+          ]
+        },
+        {
+          "key": "sum:durationMinutes",
+          "kind": "kpi",
+          "label": "durationMinutes",
+          "unit": "分钟",
+          "points": [
+            {
+              "key": "durationMinutes",
+              "value": 150
+            }
+          ]
+        },
+        {
+          "key": "heatmap:occurredAt",
+          "kind": "heatmap",
+          "label": "occurredAt",
+          "unit": "分钟",
+          "points": [
+            {
+              "key": "2026-08-24",
+              "value": 8
+            },
+            {
+              "key": "2026-08-25",
+              "value": 16
+            },
+            {
+              "key": "2026-08-26",
+              "value": 24
+            },
+            {
+              "key": "2026-08-27",
+              "value": 32
+            },
+            {
+              "key": "2026-08-28",
+              "value": 40
+            },
+            {
+              "key": "2026-08-29",
+              "value": 48
+            }
+          ]
+        },
+        {
+          "key": "category:category",
+          "kind": "category",
+          "label": "category",
+          "unit": "次",
+          "points": [
+            {
+              "key": "学习",
+              "value": 7
+            },
+            {
+              "key": "收藏",
+              "value": 5
+            },
+            {
+              "key": "生活",
+              "value": 3
+            }
+          ]
+        },
+        {
+          "key": "monthly:durationMinutes",
+          "kind": "timeSeries",
+          "label": "durationMinutes",
+          "unit": "分钟",
+          "points": [
+            {
+              "key": "2026-04",
+              "value": 40
+            },
+            {
+              "key": "2026-05",
+              "value": 64
+            },
+            {
+              "key": "2026-06",
+              "value": 88
+            },
+            {
+              "key": "2026-07",
+              "value": 112
+            },
+            {
+              "key": "2026-08",
+              "value": 136
+            }
+          ]
+        },
+        {
+          "key": "monthly:count",
+          "kind": "timeSeries",
+          "label": "count",
+          "unit": "分钟",
+          "points": [
+            {
+              "key": "2026-04",
+              "value": 20
+            },
+            {
+              "key": "2026-05",
+              "value": 35
+            },
+            {
+              "key": "2026-06",
+              "value": 50
+            },
+            {
+              "key": "2026-07",
+              "value": 65
+            },
+            {
+              "key": "2026-08",
+              "value": 80
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

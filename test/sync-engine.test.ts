@@ -4,6 +4,7 @@ import test from "node:test"
 import { cacheExternalImages, SyncEngine, type VaultAdapter, type VaultNote } from "../src/sync-engine"
 import { DEFAULT_SETTINGS, type ManifestEntry, type PluginSettings, type VaultManifest } from "../src/types"
 import { sha256Hex } from "../src/markdown"
+import { TEMPLATE_PACKS } from "../src/templates"
 
 class MemoryVault implements VaultAdapter {
   files = new Map<string, string>()
@@ -117,11 +118,12 @@ test("all 22 service namespaces are consumed atomically from one manifest", asyn
   const reader = new Reader()
   const entries: Record<string, ManifestEntry> = {}
   for (const service of services) {
-    const path = `services/${service}/fixture/${service}-1.md`
-    const content = serviceNote(service)
+    const entityType = TEMPLATE_PACKS[service]!.detailEntities[0]!
+    const path = `services/${service}/${entityType}/${service}-1.md`
+    const content = serviceNote(service, entityType)
     reader.files.set(path, content)
     entries[`${service}:fixture:${service}-1`] = {
-      service, entityType: "fixture", entityId: `${service}-1`, path,
+      service, entityType, entityId: `${service}-1`, path,
       contentHash: await sha256Hex(content), updatedAt: "2026-08-29T00:00:00Z",
     }
   }
@@ -130,10 +132,37 @@ test("all 22 service namespaces are consumed atomically from one manifest", asyn
   const engine = new SyncEngine(api as any, vault, settings, async (patch) => { settings = { ...settings, ...patch } }, () => {}, () => reader as any)
   const result = await engine.run()
   assert.equal(result.created, services.length)
-  assert.equal(vault.files.size, services.length)
+  assert.equal(vault.files.size, services.length * 2)
   for (const service of services) {
-    assert.ok(vault.files.has(`NotionHub/services/${service}/fixture/${service}-1.md`), service)
+    const entityType = TEMPLATE_PACKS[service]!.detailEntities[0]!
+    const detail = vault.files.get(`NotionHub/services/${service}/${entityType}/${service}-1.md`) || ""
+    assert.match(detail, /notionhub-detail-template-start/, `${service} detail template`)
+    assert.ok(vault.files.has(`NotionHub/services/${service}/首页.md`), `${service} template`)
   }
+})
+
+test("manifest v2 visual artifacts are hash-verified, cached and install templates", async () => {
+  const vault = new MemoryVault()
+  const reader = new Reader()
+  const noteContent = note("v2")
+  const catalogContent = JSON.stringify({ schemaVersion: 1, service: "weread", label: "微信读书", icon: "📚", color: "#2f7d32", primaryEntities: ["book"], entries: [] }) + "\n"
+  const analyticsContent = JSON.stringify({ schemaVersion: 1, service: "weread", series: [] }) + "\n"
+  reader.files.set("services/weread/book/book-1.md", noteContent)
+  reader.files.set(".notionhub/catalog/weread.json", catalogContent)
+  reader.files.set(".notionhub/analytics/weread.json", analyticsContent)
+  const base = await manifest(noteContent)
+  reader.manifestValue = {
+    ...base,
+    schemaVersion: 2,
+    catalogs: { weread: { path: ".notionhub/catalog/weread.json", contentHash: await sha256Hex(catalogContent), schemaVersion: 1 } },
+    analytics: { weread: { path: ".notionhub/analytics/weread.json", contentHash: await sha256Hex(analyticsContent), schemaVersion: 1 } },
+  }
+  const engine = new SyncEngine(api as any, vault, { ...DEFAULT_SETTINGS }, async () => {}, () => {}, () => reader as any)
+  const result = await engine.run()
+  assert.equal(result.templatesCreated, 1)
+  assert.equal(vault.files.get("NotionHub/.notionhub/catalog/weread.json"), catalogContent)
+  assert.equal(vault.files.get("NotionHub/.notionhub/analytics/weread.json"), analyticsContent)
+  assert.match(vault.files.get("NotionHub/services/weread/首页.md") || "", /```notionhub-view/)
 })
 
 async function manifest(content: string): Promise<VaultManifest> {
@@ -148,8 +177,8 @@ function note(version: string): string {
   return `---\nnotionhub_service: weread\nnotionhub_entity_type: book\nnotionhub_entity_id: book-1\n---\n<!-- notionhub-managed-start -->\nfixture ${version}\n<!-- notionhub-managed-end -->\n`
 }
 
-function serviceNote(service: string): string {
-  return `---\nnotionhub_service: ${service}\nnotionhub_entity_type: fixture\nnotionhub_entity_id: ${service}-1\n---\n<!-- notionhub-managed-start -->\n${service}\n<!-- notionhub-managed-end -->\n`
+function serviceNote(service: string, entityType: string): string {
+  return `---\nnotionhub_service: ${service}\nnotionhub_entity_type: ${entityType}\nnotionhub_entity_id: ${service}-1\n---\n<!-- notionhub-managed-start -->\n${service}\n<!-- notionhub-managed-end -->\n`
 }
 
 function identity(content: string) {

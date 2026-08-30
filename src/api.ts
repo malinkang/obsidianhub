@@ -1,4 +1,4 @@
-import type { DeviceCredentials, RepositoryStatus, VaultManifest } from "./types"
+import type { DeviceCredentials, RepositoryStatus, ServiceAnalytics, ServiceCatalog, VaultManifest } from "./types"
 
 type ApiEnvelope<T> = { code: number; message?: string; data: T }
 
@@ -91,8 +91,16 @@ export class GithubRepositoryReader {
     if (response.status === 304) return { manifest: null, etag, unchanged: true }
     if (!response.ok) throw new Error(`读取 manifest 失败 (${response.status})`)
     const manifest = JSON.parse(await response.text()) as VaultManifest
-    if (manifest.schemaVersion !== 1 || !manifest.entries || typeof manifest.entries !== "object") throw new Error("不支持的 NotionHub manifest")
+    if (![1, 2].includes(manifest.schemaVersion) || !manifest.entries || typeof manifest.entries !== "object") throw new Error("不支持的 NotionHub manifest")
     return { manifest, etag: response.headers.get("ETag") || "", unchanged: false }
+  }
+
+  async catalog(path: string, commitSha: string, signal?: AbortSignal): Promise<ServiceCatalog> {
+    return this.artifact<ServiceCatalog>(path, commitSha, 1, signal)
+  }
+
+  async analytics(path: string, commitSha: string, signal?: AbortSignal): Promise<ServiceAnalytics> {
+    return this.artifact<ServiceAnalytics>(path, commitSha, 1, signal)
   }
 
   async file(path: string, commitSha: string, signal?: AbortSignal): Promise<string> {
@@ -102,6 +110,13 @@ export class GithubRepositoryReader {
     })
     if (!response.ok) throw new Error(`读取 ${path} 失败 (${response.status})`)
     return response.text()
+  }
+
+  private async artifact<T extends { schemaVersion?: number }>(path: string, commitSha: string, schemaVersion: number, signal?: AbortSignal): Promise<T> {
+    const raw = await this.file(path, commitSha, signal)
+    const value = JSON.parse(raw) as T
+    if (!value || value.schemaVersion !== schemaVersion) throw new Error(`不支持的可视化数据：${path}`)
+    return value
   }
 
   private async json<T>(path: string, signal?: AbortSignal): Promise<T> {
