@@ -4,7 +4,7 @@ import { TemplateManager } from "./template-manager"
 import { materializeDetailLayout } from "./detail-template"
 import { TEMPLATE_PACKS } from "./templates"
 import { MAX_CACHED_IMAGE_BYTES, safeExternalUrl } from "./network-policy"
-import { joinVaultPath, safeConfiguredPath, safeRelativePath, safeVaultWritePath } from "./path-policy"
+import { joinVaultPath, safeConfiguredPath, safeRelativePath, safeVaultWritePath, serviceEntryVaultPath } from "./path-policy"
 import type { ManifestArtifact, ManifestEntry, PluginSettings, SyncProgress, SyncSummary, VaultManifest } from "./types"
 
 export type VaultNote = { path: string; content: string; identity: EntityIdentity | null }
@@ -136,11 +136,7 @@ export class SyncEngine {
   }
 
   private targetPath(entry: ManifestEntry): string {
-    const prefix = `services/${entry.service}/`
-    const relative = safeRelativePath(entry.path.slice(prefix.length))
-    const vaultRoot = safeConfiguredPath(this.settings.vaultRoot, "NotionHub")
-    const serviceRoot = safeConfiguredPath(String(this.settings.serviceFolders[entry.service] || ""), `services/${entry.service}`)
-    return joinVaultPath(vaultRoot, serviceRoot, relative)
+    return serviceEntryVaultPath(this.settings.vaultRoot, this.settings.serviceFolders, entry.service, entry.path)
   }
 
   private assertActive(signal?: AbortSignal): void {

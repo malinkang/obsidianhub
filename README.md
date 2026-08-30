@@ -21,6 +21,10 @@ The refresh credential is stored through Obsidian SecretStorage, never in the pl
 
 Synchronized notes are written under `NotionHub/` by default. The plugin replaces only marked managed regions; custom frontmatter and handwritten content outside those regions remain local.
 
+### WeRead workspace
+
+Use **NotionHub: 打开微信读书书架** or the library ribbon icon to open the native WeRead workspace. It provides searchable book cards, category/status/year grouping, progress sorting, and safe links to the synchronized local notes. **NotionHub: 打开微信读书阅读统计** opens KPI, heatmap, monthly trend, and category views backed by the synchronized catalog and analytics files. These views never request or store a WeRead Cookie or API key in Obsidian.
+
 Local development:
 
 ```bash

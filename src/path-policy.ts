@@ -23,3 +23,17 @@ export function safeVaultWritePath(value: string): string {
 export function joinVaultPath(...parts: string[]): string {
   return safeVaultWritePath(parts.filter(Boolean).join("/"))
 }
+
+export function serviceEntryVaultPath(
+  vaultRoot: string,
+  serviceFolders: Record<string, string>,
+  service: string,
+  remotePath: string,
+): string {
+  const prefix = `services/${safeRelativePath(service)}/`
+  if (!remotePath.startsWith(prefix)) throw new Error(`条目路径与服务不匹配：${remotePath}`)
+  const relative = safeRelativePath(remotePath.slice(prefix.length))
+  const root = safeConfiguredPath(vaultRoot, "NotionHub")
+  const serviceRoot = safeConfiguredPath(String(serviceFolders[service] || ""), `services/${service}`)
+  return joinVaultPath(root, serviceRoot, relative)
+}

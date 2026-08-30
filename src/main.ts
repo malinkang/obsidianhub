@@ -12,13 +12,14 @@ import {
 import { NotionHubApi } from "./api"
 import { migrateLegacyCredentials, persistCredentials, runtimeCredentials } from "./credential-store"
 import { identityFromFrontmatter } from "./markdown"
-import { safeVaultWritePath } from "./path-policy"
+import { safeVaultWritePath, serviceEntryVaultPath } from "./path-policy"
 import { SyncEngine, type VaultAdapter, type VaultNote } from "./sync-engine"
 import { TemplateManager } from "./template-manager"
 import { TEMPLATE_PACKS } from "./templates"
 import { DEFAULT_SETTINGS, type PluginSettings, type SyncProgress } from "./types"
 import { parseViewSpec, renderView } from "./view-renderer"
 import { VisualDataStore } from "./visual-store"
+import { WEREAD_BOOKSHELF_VIEW, WEREAD_STATS_VIEW, WereadBookshelfView, WereadStatsView } from "./weread-views"
 
 export default class NotionHubPlugin extends Plugin {
   settings: PluginSettings = DEFAULT_SETTINGS
@@ -36,10 +37,22 @@ export default class NotionHubPlugin extends Plugin {
     this.vaultAdapter = new ObsidianVaultAdapter(this.app)
     this.visualStore = new VisualDataStore(this.vaultAdapter, this.settings)
     this.addSettingTab(new NotionHubSettingTab(this.app, this))
+    const wereadActions = {
+      openEntry: (path: string, entry?: { entityId: string; entityType: string }) => void this.openServiceEntry("weread", path, "", entry),
+      openBookshelf: () => void this.activateWereadView(WEREAD_BOOKSHELF_VIEW),
+      openStats: () => void this.activateWereadView(WEREAD_STATS_VIEW),
+      sync: () => void this.sync(),
+    }
+    const wereadData = () => Promise.all([this.visualStore.catalog("weread"), this.visualStore.analysis("weread")])
+    this.registerView(WEREAD_BOOKSHELF_VIEW, (leaf) => new WereadBookshelfView(leaf, wereadData, wereadActions))
+    this.registerView(WEREAD_STATS_VIEW, (leaf) => new WereadStatsView(leaf, wereadData, wereadActions))
     this.addRibbonIcon("refresh-cw", "同步 NotionHub", () => void this.sync())
+    this.addRibbonIcon("library", "打开微信读书书架", () => void this.activateWereadView(WEREAD_BOOKSHELF_VIEW))
     this.addCommand({ id: "sync-now", name: "立即同步", callback: () => void this.sync() })
     this.addCommand({ id: "cancel-sync", name: "取消当前同步", callback: () => this.cancelSync() })
     this.addCommand({ id: "restore-templates", name: "恢复官方服务模板", callback: () => void this.restoreTemplates() })
+    this.addCommand({ id: "open-weread-bookshelf", name: "打开微信读书书架", callback: () => void this.activateWereadView(WEREAD_BOOKSHELF_VIEW) })
+    this.addCommand({ id: "open-weread-stats", name: "打开微信读书阅读统计", callback: () => void this.activateWereadView(WEREAD_STATS_VIEW) })
     this.registerMarkdownCodeBlockProcessor("notionhub-view", async (source, element, context) => {
       try {
         const spec = parseViewSpec(source)
@@ -47,9 +60,7 @@ export default class NotionHubPlugin extends Plugin {
           this.visualStore.catalog(spec.service),
           this.visualStore.analysis(spec.service),
         ])
-        renderView(element, spec, catalog, analytics, (path) => {
-          void this.app.workspace.openLinkText(path.replace(/\.md$/, ""), context.sourcePath, false)
-        })
+        renderView(element, spec, catalog, analytics, (path) => void this.openServiceEntry(spec.service, path, context.sourcePath))
       } catch (error) {
         element.replaceChildren()
         const message = element.ownerDocument.createElement("p")
@@ -103,6 +114,7 @@ export default class NotionHubPlugin extends Plugin {
       )
       const result = await engine.run(this.abortController.signal)
       this.visualStore.clear()
+      await this.refreshWereadViews()
       const conflicts = result.templateConflicts ? `，模板冲突 ${result.templateConflicts}` : ""
       new Notice(`NotionHub 同步完成：新增 ${result.created}，更新 ${result.updated}，归档 ${result.deleted}${conflicts}`)
     } catch (error) {
@@ -131,6 +143,37 @@ export default class NotionHubPlugin extends Plugin {
     const targets = services.size ? services : new Set(Object.keys(TEMPLATE_PACKS))
     const result = await new TemplateManager(this.vaultAdapter, this.settings).ensure(targets, true)
     new Notice(`NotionHub 模板已恢复：新增 ${result.created}，更新 ${result.updated}，冲突 ${result.conflicts.length}`)
+  }
+
+  private async openServiceEntry(
+    service: string,
+    remotePath: string,
+    sourcePath = "",
+    identity?: { entityId: string; entityType: string },
+  ): Promise<void> {
+    try {
+      const generatedPath = serviceEntryVaultPath(this.settings.vaultRoot, this.settings.serviceFolders, service, remotePath)
+      const moved = identity
+        ? (await this.vaultAdapter.notes()).find((note) => note.identity?.service === service && note.identity.entityType === identity.entityType && note.identity.entityId === identity.entityId)?.path
+        : undefined
+      await this.app.workspace.openLinkText((moved || generatedPath).replace(/\.md$/, ""), sourcePath, false)
+    } catch (error) {
+      new Notice(error instanceof Error ? error.message : "NotionHub 条目路径无效")
+    }
+  }
+
+  private async activateWereadView(viewType: string): Promise<void> {
+    const leaf = this.app.workspace.getLeavesOfType(viewType)[0] || this.app.workspace.getLeaf("tab")
+    await leaf.setViewState({ type: viewType, active: true })
+    await this.app.workspace.revealLeaf(leaf)
+  }
+
+  private async refreshWereadViews(): Promise<void> {
+    const views = [
+      ...this.app.workspace.getLeavesOfType(WEREAD_BOOKSHELF_VIEW).map((leaf) => leaf.view),
+      ...this.app.workspace.getLeavesOfType(WEREAD_STATS_VIEW).map((leaf) => leaf.view),
+    ]
+    await Promise.all(views.map((view) => view instanceof WereadBookshelfView || view instanceof WereadStatsView ? view.refresh() : Promise.resolve()))
   }
 
   private updateStatus(progress: SyncProgress): void {
