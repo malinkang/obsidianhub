@@ -38,7 +38,9 @@ For a local manual install, copy `manifest.json`, the generated `main.js`, and `
 
 ## Native service templates
 
-The plugin ships one curated dashboard and entity-detail layout for every NotionHub Runner service. The 24 packs are installed or safely upgraded under `NotionHub/services/<service>/` during sync. Official managed regions are replaced on upgrade; custom frontmatter and handwritten content outside those regions remain untouched. A malformed or removed managed anchor creates a conflict copy instead of overwriting the note.
+The plugin ships one curated dashboard and entity-detail layout for each of 22 supported NotionHub Runner services. The packs are installed or safely upgraded under `NotionHub/services/<service>/` during sync. Official managed regions are replaced on upgrade; custom frontmatter and handwritten content outside those regions remain untouched. A malformed or removed managed anchor creates a conflict copy instead of overwriting the note.
+
+Supported service IDs are `applemusic`, `bbdc`, `bilibili`, `daily`, `dida`, `douban`, `douyin`, `duolingo`, `flomo`, `forest`, `github`, `guwendao`, `jike`, `keep`, `neteasemusic`, `podcast`, `spotify`, `toggl`, `trakt`, `weibo`, `weread`, and `youtube`.
 
 Supported native views are Gallery, KPI, calendar heatmap, line, bar, stacked bar, area, and donut. They are rendered by the plugin from versioned catalog and analytics JSON; no Dataview, Tracker, Charts, Heatmap Calendar, Templater, or other community plugin is required. The Markdown headings, links, callouts, and entity bodies remain readable when ObsidianHub is disabled.
 
@@ -57,4 +59,4 @@ Tags must exactly equal the version in `manifest.json`, without a `v` prefix. Pu
 
 ## Legal
 
-ObsidianHub is licensed under the [MIT License](LICENSE). Third-party service names are used only to describe compatibility. ObsidianHub is not affiliated with or endorsed by Obsidian, Notion, Apple, Spotify, Google, ByteDance, Douban, Keep, Strava, or the other supported services; see [Third-party notices](NOTICE.md).
+ObsidianHub is licensed under the [MIT License](LICENSE). Third-party service names are used only to describe compatibility. ObsidianHub is not affiliated with or endorsed by Obsidian, Notion, Apple, Spotify, Google, ByteDance, Douban, Keep, or the other supported services; see [Third-party notices](NOTICE.md).

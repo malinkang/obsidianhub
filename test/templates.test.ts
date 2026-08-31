@@ -1,5 +1,5 @@
 import assert from "node:assert/strict"
-import { readFileSync } from "node:fs"
+import { readdirSync, readFileSync } from "node:fs"
 import test from "node:test"
 
 import { mergeTemplate, TemplateManager } from "../src/template-manager"
@@ -13,12 +13,12 @@ class Vault {
   notes() { return Promise.resolve([...this.files].map(([path, content]) => ({ path, content }))) }
 }
 
-test("template registry atomically covers 24 services and all native view types", () => {
-  assert.equal(Object.keys(TEMPLATE_PACKS).length, 24)
+test("template registry atomically covers exactly 22 services and all native view types", () => {
+  assert.equal(Object.keys(TEMPLATE_PACKS).length, 22)
   assert.deepEqual(Object.keys(TEMPLATE_PACKS).sort(), [
     "applemusic", "bbdc", "bilibili", "daily", "dida", "douban", "douyin", "duolingo",
     "flomo", "forest", "github", "guwendao", "jike", "keep", "neteasemusic", "podcast",
-    "spotify", "strava", "toggl", "trakt", "weibo", "weread", "xiaohongshu", "youtube",
+    "spotify", "toggl", "trakt", "weibo", "weread", "youtube",
   ])
   assert.deepEqual(validateTemplateRegistry(), [])
   const types = new Set(Object.values(TEMPLATE_PACKS).flatMap((pack) => pack.views.map((view) => view.type)))
@@ -28,6 +28,10 @@ test("template registry atomically covers 24 services and all native view types"
 test("tracked sample fixtures cover every service and every explicitly requested series", () => {
   const fixtures = JSON.parse(readFileSync(new URL("../samples/fixtures.json", import.meta.url), "utf8")) as Record<string, { analytics: { series: Array<{ key: string }> } }>
   assert.deepEqual(Object.keys(fixtures).sort(), Object.keys(TEMPLATE_PACKS).sort())
+  assert.deepEqual(
+    readdirSync(new URL("../samples/services/", import.meta.url)).filter((name) => name.endsWith(".png")).map((name) => name.replace(/\.png$/, "")).sort(),
+    Object.keys(TEMPLATE_PACKS).sort(),
+  )
   for (const [service, pack] of Object.entries(TEMPLATE_PACKS)) {
     const keys = new Set(fixtures[service]!.analytics.series.map((series) => series.key))
     for (const view of pack.views) {
@@ -70,9 +74,9 @@ test("automatic installation writes all requested service templates deterministi
   const manager = new TemplateManager(vault, { ...DEFAULT_SETTINGS })
   const first = await manager.ensure(Object.keys(TEMPLATE_PACKS))
   const second = await manager.ensure(Object.keys(TEMPLATE_PACKS))
-  assert.equal(first.created, 24)
-  assert.equal(second.skipped, 24)
-  assert.equal(vault.files.size, 24)
+  assert.equal(first.created, 22)
+  assert.equal(second.skipped, 22)
+  assert.equal(vault.files.size, 22)
 })
 
 test("template upgrades follow a user-moved dashboard instead of recreating the old path", async () => {

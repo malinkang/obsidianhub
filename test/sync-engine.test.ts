@@ -1,8 +1,9 @@
 import assert from "node:assert/strict"
 import test from "node:test"
 
+import { NotionHubApi } from "../src/api"
 import { cacheExternalImages, SyncEngine, type VaultAdapter, type VaultNote } from "../src/sync-engine"
-import { DEFAULT_SETTINGS, type ManifestEntry, type PluginSettings, type VaultManifest } from "../src/types"
+import { DEFAULT_SETTINGS, type DeviceCredentials, type ManifestEntry, type PluginSettings, type VaultManifest } from "../src/types"
 import { sha256Hex } from "../src/markdown"
 import { TEMPLATE_PACKS } from "../src/templates"
 
@@ -10,6 +11,7 @@ class MemoryVault implements VaultAdapter {
   files = new Map<string, string>()
   binaries = new Map<string, ArrayBuffer>()
   failNextWrite = false
+  writeCount = 0
 
   async notes(): Promise<VaultNote[]> {
     return [...this.files].filter(([path]) => path.endsWith(".md")).map(([path, content]) => ({ path, content, identity: identity(content) }))
@@ -17,6 +19,7 @@ class MemoryVault implements VaultAdapter {
   async read(path: string): Promise<string | null> { return this.files.get(path) ?? null }
   async writeAtomic(path: string, content: string): Promise<void> {
     if (this.failNextWrite) { this.failNextWrite = false; throw new Error("interrupted") }
+    this.writeCount += 1
     this.files.set(path, content)
   }
   async remove(path: string): Promise<void> { this.files.delete(path) }
@@ -68,6 +71,66 @@ test("first sync, no-change, update after move, and user-preserving tombstone ar
   assert.equal(archived.deleted, 1)
   assert.match(vault.files.get(movedPath) || "", /notionhub_archived: true/)
   assert.match(vault.files.get(movedPath) || "", /handwritten/)
+})
+
+test("a second pull follows the HTTP 304 path without fetching or rewriting files", async () => {
+  const vault = new MemoryVault()
+  const commit = "a".repeat(40)
+  const content = note("v1")
+  const manifestValue = await manifest(content)
+  const etag = '"manifest-v1"'
+  const credentials: DeviceCredentials = {
+    accessToken: "device-access",
+    refreshToken: "refresh-secret",
+    accessExpiresAt: "2030-01-01T00:00:00Z",
+    refreshExpiresAt: "2031-01-01T00:00:00Z",
+  }
+  const requests: Array<{ url: string; method: string; ifNoneMatch: string }> = []
+  let manifestRequests = 0
+  const fetcher = async (request: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
+    const url = String(request)
+    const headers = new Headers(init?.headers)
+    requests.push({ url, method: init?.method || "GET", ifNoneMatch: headers.get("If-None-Match") || "" })
+    if (url.includes("/vault/head")) {
+      return Response.json({ code: 200, data: { commit, branch: "main" } })
+    }
+    if (url.includes("/vault/manifest")) {
+      manifestRequests += 1
+      if (manifestRequests === 2) return new Response(null, { status: 304 })
+      return Response.json(manifestValue, { headers: { ETag: etag } })
+    }
+    if (url.endsWith("/vault/files")) {
+      const body = JSON.parse(String(init?.body)) as { commit: string; paths: string[] }
+      return Response.json({
+        code: 200,
+        data: { commit: body.commit, files: body.paths.map((path) => ({ path, content })) },
+      })
+    }
+    throw new Error(`unexpected request: ${url}`)
+  }
+  const api = new NotionHubApi("https://integration.test/v1", credentials, async () => {}, fetcher as typeof fetch)
+  const engine = new SyncEngine(api, vault, { ...DEFAULT_SETTINGS }, async () => {}, () => {})
+
+  const first = await engine.run()
+  assert.equal(first.created, 1)
+  const entryPath = "NotionHub/services/weread/book/book-1.md"
+  const firstEntry = vault.files.get(entryPath)
+  const writesAfterFirstPull = vault.writeCount
+  const requestsAfterFirstPull = requests.length
+
+  const second = await engine.run()
+  assert.deepEqual(
+    { created: second.created, updated: second.updated, deleted: second.deleted, skipped: second.skipped },
+    { created: 0, updated: 0, deleted: 0, skipped: 1 },
+  )
+  assert.equal(vault.writeCount, writesAfterFirstPull)
+  assert.equal(vault.files.get(entryPath), firstEntry)
+  assert.deepEqual(requests.slice(requestsAfterFirstPull).map(({ url }) => new URL(url).pathname), [
+    "/v1/obsidian/device/vault/head",
+    "/v1/obsidian/device/vault/manifest",
+  ])
+  assert.deepEqual(requests.filter(({ url }) => url.includes("/vault/manifest")).map(({ ifNoneMatch }) => ifNoneMatch), ["", etag])
+  assert.equal(requests.filter(({ url }) => url.endsWith("/vault/files") || url.includes("/vault/file?")).length, 1)
 })
 
 test("interruption does not advance checkpoint and retry completes", async () => {
@@ -126,11 +189,11 @@ test("image caching blocks private, insecure, oversized and active image content
   assert.equal(vault.binaries.size, 0)
 })
 
-test("all 24 service namespaces are consumed atomically from one manifest", async () => {
+test("all 22 service namespaces are consumed atomically from one manifest", async () => {
   const services = [
     "weread", "podcast", "douban", "keep", "dida", "flomo", "duolingo", "bbdc",
-    "bilibili", "neteasemusic", "forest", "toggl", "applemusic", "strava", "trakt",
-    "youtube", "spotify", "xiaohongshu", "douyin", "weibo", "github", "guwendao", "jike", "daily",
+    "bilibili", "neteasemusic", "forest", "toggl", "applemusic", "trakt", "youtube",
+    "spotify", "douyin", "weibo", "github", "guwendao", "jike", "daily",
   ]
   const vault = new MemoryVault()
   const reader = new Reader()
@@ -159,7 +222,7 @@ test("all 24 service namespaces are consumed atomically from one manifest", asyn
   }
 })
 
-test("Jike and Weibo namespaces are accepted while undeclared services remain rejected", async () => {
+test("Jike and Weibo namespaces are accepted while retired and undeclared services are rejected", async () => {
   for (const [service, entityType] of [["jike", "posts"], ["weibo", "weibo"]] as const) {
     const vault = new MemoryVault()
     const reader = new Reader()
@@ -180,23 +243,25 @@ test("Jike and Weibo namespaces are accepted while undeclared services remain re
     assert.ok(vault.files.has(`NotionHub/services/${service}/${entityType}/${service}-1.md`))
   }
 
-  const vault = new MemoryVault()
-  const reader = new Reader()
-  const content = serviceNote("unknown", "posts")
-  const path = "services/unknown/posts/unknown-1.md"
-  reader.files.set(path, content)
-  reader.manifestValue = {
-    schemaVersion: 1,
-    entries: {
-      "unknown:posts:unknown-1": {
-        service: "unknown", entityType: "posts", entityId: "unknown-1", path,
-        contentHash: await sha256Hex(content), updatedAt: "2026-08-29T00:00:00Z",
+  for (const service of ["strava", "xiaohongshu", "unknown"]) {
+    const vault = new MemoryVault()
+    const reader = new Reader()
+    const content = serviceNote(service, "posts")
+    const path = `services/${service}/posts/${service}-1.md`
+    reader.files.set(path, content)
+    reader.manifestValue = {
+      schemaVersion: 1,
+      entries: {
+        [`${service}:posts:${service}-1`]: {
+          service, entityType: "posts", entityId: `${service}-1`, path,
+          contentHash: await sha256Hex(content), updatedAt: "2026-08-29T00:00:00Z",
+        },
       },
-    },
+    }
+    const engine = new SyncEngine(reader, vault, { ...DEFAULT_SETTINGS }, async () => {}, () => {})
+    await assert.rejects(engine.run(), new RegExp(`manifest 包含未知服务：${service}`))
+    assert.equal(vault.files.size, 0)
   }
-  const engine = new SyncEngine(reader, vault, { ...DEFAULT_SETTINGS }, async () => {}, () => {})
-  await assert.rejects(engine.run(), /manifest 包含未知服务：unknown/)
-  assert.equal(vault.files.size, 0)
 })
 
 test("large initial sync uses bounded Worker batches instead of one request per note", async () => {

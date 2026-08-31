@@ -17,11 +17,9 @@ This audit was completed read-only against the current NotionHub source-template
 | Forest | All/day/week/month/year, category, tree, records | Focus heatmap/trend, category donut, forest Gallery |
 | Toggl | All/day/week/month/year, clients, tags, entries, projects | Time heatmap/trend and project/client analysis |
 | Apple Music | All/day/week/month/year, artists, playlists, songs, albums | Music Gallery, favorite heatmap/trend, artist distribution |
-| Strava | All/day/week/month/year, splits, activity types, activities | Activity heatmap, distance/duration trends, type distribution |
 | Trakt | Day/week/month/year/all, genre, director, cast, writer, title, episode, history | Movie Gallery, watch heatmap, genre and rating analysis |
 | YouTube | All/year/month/week/day, playlists, channels, favorites | Video Gallery, favorite heatmap, channel/playlist distributions |
 | Spotify | Legacy Notion music template plus the same artist/playlist/song/album service contract | Music Gallery, favorite heatmap/trend, artist distribution |
-| Xiaohongshu | All/year/month/week/day, tags, authors, files, notes | Note Gallery, favorite heatmap, author/tag analysis |
 | Douyin | All/year/month/week/day, collections, authors, videos, resources | Video/image Gallery, engagement bars, author distribution |
 | Weibo | Statuses, tags, resources, daily/weekly/monthly/yearly/all views | Status Gallery, publishing/favorite heatmap, engagement and source analysis |
 | GitHub | All/year/month/week/day, category, author, repositories | Repository Gallery, star heatmap, star/fork ranking, language donut |
