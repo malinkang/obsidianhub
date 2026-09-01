@@ -141,7 +141,11 @@ export class NotionHubApi {
       body: JSON.stringify({ commit: commitSha, paths }),
       signal,
     })
-    if (response.status === 413 && paths.length > 1) {
+    if (response.status === 413) {
+      if (paths.length === 1) {
+        const path = paths[0]!
+        return new Map([[path, await this.file(path, commitSha, signal)]])
+      }
       const middle = Math.ceil(paths.length / 2)
       const left = await this.fileBatch(paths.slice(0, middle), commitSha, signal)
       const right = await this.fileBatch(paths.slice(middle), commitSha, signal)

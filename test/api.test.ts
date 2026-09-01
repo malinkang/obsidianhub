@@ -90,6 +90,42 @@ test("Vault files are read in bounded Worker batches and oversized responses are
   assert.deepEqual(requests.map((batch) => batch.length), [5, 3, 2, 1, 2])
 })
 
+test("a singleton batch rejected for size falls back to the bounded single-file route", async () => {
+  const credentials: DeviceCredentials = {
+    accessToken: "device-access", refreshToken: "refresh-secret",
+    accessExpiresAt: "2030-01-01T00:00:00Z", refreshExpiresAt: "2031-01-01T00:00:00Z",
+  }
+  const path = ".notionhub/catalog/bilibili.json"
+  const calls: Array<{ url: string; method: string; authorization: string }> = []
+  const fetcher = async (request: RequestInfo | URL, init?: RequestInit) => {
+    const url = String(request)
+    const method = init?.method || "GET"
+    calls.push({
+      url,
+      method,
+      authorization: new Headers(init?.headers).get("Authorization") || "",
+    })
+    if (method === "POST") {
+      return Response.json({ code: 413, message: "too large", data: null }, { status: 413 })
+    }
+    return new Response("large catalog")
+  }
+  const api = new NotionHubApi(
+    "https://integration.test/v1",
+    credentials,
+    async () => {},
+    fetcher as typeof fetch,
+  )
+
+  const files = await api.readFiles([path], COMMIT)
+
+  assert.equal(files.get(path), "large catalog")
+  assert.deepEqual(calls.map((call) => call.method), ["POST", "GET"])
+  assert.ok(calls[1]!.url.includes(`/obsidian/device/vault/file?commit=${COMMIT}`))
+  assert.ok(calls[1]!.url.includes("path=.notionhub%2Fcatalog%2Fbilibili.json"))
+  assert.ok(calls.every((call) => call.authorization === "Bearer device-access"))
+})
+
 test("Vault batch responses cannot inject or omit paths", async () => {
   const credentials: DeviceCredentials = {
     accessToken: "device-access", refreshToken: "refresh-secret",
