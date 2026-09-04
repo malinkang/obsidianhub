@@ -1,4 +1,10 @@
-import type { DeviceCredentials, VaultManifest } from "./types"
+import { sha256Hex } from "./markdown"
+import {
+  normalizeVaultManifest,
+  normalizeVaultManifestShard,
+  type DeviceCredentials,
+  type VaultManifest,
+} from "./types"
 
 export const NOTIONHUB_INTEGRATION_BASE_URL = "https://i.notionhub.app/v1"
 export const NOTIONHUB_DEVICE_AUTHORIZE_URL = "https://www.notionhub.app/obsidian/authorize"
@@ -70,10 +76,11 @@ export class NotionHubApi {
     })
     if (response.status === 304) return { manifest: null, etag, unchanged: true }
     if (!response.ok) throw await responseError(response, "读取 Vault manifest 失败")
-    const manifest = await response.json().catch(() => null) as VaultManifest | null
-    if (!manifest || ![1, 2].includes(manifest.schemaVersion) || !manifest.entries || typeof manifest.entries !== "object") {
-      throw new Error("不支持的 NotionHub manifest")
-    }
+    const root = normalizeVaultManifest(await response.json().catch(() => null))
+    if (!root) throw new Error("不支持的 NotionHub manifest")
+    const manifest = root.schemaVersion === 3
+      ? await this.hydrateManifestShards(root, commitSha, signal)
+      : root
     return { manifest, etag: response.headers.get("ETag") || "", unchanged: false }
   }
 
@@ -112,6 +119,49 @@ export class NotionHubApi {
     this.credentials = refreshed
     await this.persistCredentials(this.credentials)
     return refreshed.accessToken
+  }
+
+  private async hydrateManifestShards(
+    root: VaultManifest,
+    commitSha: string,
+    signal?: AbortSignal,
+  ): Promise<VaultManifest> {
+    const entries = { ...root.entries }
+    for (const [service, descriptors] of Object.entries(root.entryShards || {})) {
+      if (Object.values(entries).some((entry) => entry.service === service)) {
+        throw new Error(`manifest 条目与分片冲突：${service}`)
+      }
+      const files = await this.readFiles(descriptors.map((descriptor) => descriptor.path), commitSha, signal)
+      for (const descriptor of descriptors) {
+        const content = files.get(descriptor.path)
+        if (content === undefined
+          || new TextEncoder().encode(content).byteLength !== descriptor.size
+          || await sha256Hex(content) !== descriptor.contentHash) {
+          throw new Error(`manifest 分片校验失败：${service}`)
+        }
+        let parsed: unknown = null
+        try {
+          parsed = JSON.parse(content)
+        } catch {
+          throw new Error(`manifest 分片格式无效：${service}`)
+        }
+        const shard = normalizeVaultManifestShard(parsed, service)
+        if (!shard || Object.keys(shard.entries).length !== descriptor.entryCount) {
+          throw new Error(`manifest 分片格式无效：${service}`)
+        }
+        for (const [key, entry] of Object.entries(shard.entries)) {
+          if (entries[key]
+            || key !== `${service}:${entry.entityType}:${entry.entityId}`
+            || entry.service !== service
+            || !entry.path.startsWith(`services/${service}/`)
+            || !entry.path.endsWith(".md")) {
+            throw new Error(`manifest 分片条目无效：${service}`)
+          }
+          entries[key] = entry
+        }
+      }
+    }
+    return { ...root, entries }
   }
 
   private async integration<T>(path: string, init: RequestInit, authenticated = true): Promise<T> {

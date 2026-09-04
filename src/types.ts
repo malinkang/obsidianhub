@@ -14,8 +14,20 @@ export type VaultManifest = {
   sourceRevision?: string
   generatedAt?: string | null
   entries: Record<string, ManifestEntry>
+  entryShards?: Record<string, ManifestShardDescriptor[]>
   catalogs?: Record<string, ManifestArtifact>
   analytics?: Record<string, ManifestArtifact>
+}
+
+export type ManifestShardDescriptor = ManifestArtifact & {
+  size: number
+  entryCount: number
+}
+
+export type VaultManifestShard = {
+  schemaVersion: 1
+  service: string
+  entries: Record<string, ManifestEntry>
 }
 
 export type ManifestArtifact = {
@@ -182,10 +194,32 @@ function normalizeServiceViews(value: unknown): Record<string, Partial<ServiceVi
   return result
 }
 
-function normalizeVaultManifest(value: unknown): VaultManifest | null {
-  if (!isRecord(value) || ![1, 2].includes(value.schemaVersion as number) || !isRecord(value.entries)) return null
+export function normalizeVaultManifest(value: unknown): VaultManifest | null {
+  if (!isRecord(value) || ![1, 2, 3].includes(value.schemaVersion as number) || !isRecord(value.entries)) return null
+  const entries = normalizeManifestEntries(value.entries)
+  if (!entries) return null
+  const entryShards = normalizeManifestShards(value.entryShards)
+  if (value.schemaVersion === 3 && !entryShards) return null
+  return {
+    schemaVersion: value.schemaVersion as number,
+    entries,
+    ...(typeof value.sourceRevision === "string" ? { sourceRevision: value.sourceRevision } : {}),
+    ...(typeof value.generatedAt === "string" || value.generatedAt === null ? { generatedAt: value.generatedAt as string | null } : {}),
+    ...(entryShards ? { entryShards } : {}),
+    ...(normalizeArtifacts(value.catalogs) ? { catalogs: normalizeArtifacts(value.catalogs)! } : {}),
+    ...(normalizeArtifacts(value.analytics) ? { analytics: normalizeArtifacts(value.analytics)! } : {}),
+  }
+}
+
+export function normalizeVaultManifestShard(value: unknown, expectedService: string): VaultManifestShard | null {
+  if (!isRecord(value) || value.schemaVersion !== 1 || value.service !== expectedService || !isRecord(value.entries)) return null
+  const entries = normalizeManifestEntries(value.entries)
+  return entries ? { schemaVersion: 1, service: expectedService, entries } : null
+}
+
+function normalizeManifestEntries(value: Record<string, unknown>): Record<string, ManifestEntry> | null {
   const entries: Record<string, ManifestEntry> = {}
-  for (const [key, candidate] of Object.entries(value.entries)) {
+  for (const [key, candidate] of Object.entries(value)) {
     if (!isRecord(candidate)) return null
     const required = ["service", "entityType", "entityId", "path", "contentHash", "updatedAt"] as const
     if (required.some((field) => typeof candidate[field] !== "string")) return null
@@ -201,14 +235,47 @@ function normalizeVaultManifest(value: unknown): VaultManifest | null {
       ...(normalizeVisualMetadata(candidate.view) ? { view: normalizeVisualMetadata(candidate.view)! } : {}),
     }
   }
-  return {
-    schemaVersion: value.schemaVersion as number,
-    entries,
-    ...(typeof value.sourceRevision === "string" ? { sourceRevision: value.sourceRevision } : {}),
-    ...(typeof value.generatedAt === "string" || value.generatedAt === null ? { generatedAt: value.generatedAt as string | null } : {}),
-    ...(normalizeArtifacts(value.catalogs) ? { catalogs: normalizeArtifacts(value.catalogs)! } : {}),
-    ...(normalizeArtifacts(value.analytics) ? { analytics: normalizeArtifacts(value.analytics)! } : {}),
+  return entries
+}
+
+function normalizeManifestShards(value: unknown): Record<string, ManifestShardDescriptor[]> | null {
+  if (value === undefined) return null
+  if (!isRecord(value)) return null
+  const result: Record<string, ManifestShardDescriptor[]> = {}
+  for (const [service, descriptors] of Object.entries(value)) {
+    if (!/^[a-z0-9][a-z0-9_-]{0,63}$/.test(service)
+      || !Array.isArray(descriptors)
+      || !descriptors.length
+      || descriptors.length > 16) return null
+    const buckets = new Set<string>()
+    const normalized: ManifestShardDescriptor[] = []
+    for (const candidate of descriptors) {
+      if (!isRecord(candidate)
+        || typeof candidate.path !== "string"
+        || typeof candidate.contentHash !== "string"
+        || candidate.schemaVersion !== 1
+        || typeof candidate.size !== "number"
+        || !Number.isSafeInteger(candidate.size)
+        || candidate.size <= 0
+        || candidate.size > 8 * 1024 * 1024
+        || typeof candidate.entryCount !== "number"
+        || !Number.isSafeInteger(candidate.entryCount)
+        || candidate.entryCount <= 0
+        || candidate.entryCount > 20_000) return null
+      const match = candidate.path.match(new RegExp(`^\\.notionhub/manifests/${escapeRegExp(service)}/([0-9a-f])\\.json$`))
+      if (!match || buckets.has(match[1]!) || !/^[0-9a-f]{64}$/.test(candidate.contentHash)) return null
+      buckets.add(match[1]!)
+      normalized.push({
+        path: candidate.path,
+        contentHash: candidate.contentHash,
+        schemaVersion: 1,
+        size: candidate.size,
+        entryCount: candidate.entryCount,
+      })
+    }
+    result[service] = normalized
   }
+  return result
 }
 
 function normalizeArtifacts(value: unknown): Record<string, ManifestArtifact> | null {
@@ -233,6 +300,10 @@ function normalizeVisualMetadata(value: unknown): VisualMetadata | null {
   const measures = Object.fromEntries(Object.entries(value.measures).filter((entry): entry is [string, number] => typeof entry[1] === "number" && Number.isFinite(entry[1])))
   const media = Object.fromEntries(Object.entries(value.media).filter((entry): entry is [string, string[]] => Array.isArray(entry[1]) && entry[1].every((part) => typeof part === "string")))
   return { schemaVersion: value.schemaVersion, dates, dimensions, measures, media }
+}
+
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
 }
 
 export type SyncProgress = {
