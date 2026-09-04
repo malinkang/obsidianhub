@@ -17,6 +17,7 @@ This audit was completed read-only against the current NotionHub source-template
 | Forest | All/day/week/month/year, category, tree, records | Focus heatmap/trend, category donut, forest Gallery |
 | Toggl | All/day/week/month/year, clients, tags, entries, projects | Time heatmap/trend and project/client analysis |
 | Apple Music | All/day/week/month/year, artists, playlists, songs, albums | Music Gallery, favorite heatmap/trend, artist distribution |
+| Apple Podcasts | Podcasts, episodes, authors, All/day/week/month/year | Podcast and episode Gallery, listening heatmap, duration/progress trends, listening status |
 | Trakt | Day/week/month/year/all, genre, director, cast, writer, title, episode, history | Movie Gallery, watch heatmap, genre and rating analysis |
 | YouTube | All/year/month/week/day, playlists, channels, favorites | Video Gallery, favorite heatmap, channel/playlist distributions |
 | Spotify | Legacy Notion music template plus the same artist/playlist/song/album service contract | Music Gallery, favorite heatmap/trend, artist distribution |

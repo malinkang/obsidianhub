@@ -13,10 +13,10 @@ class Vault {
   notes() { return Promise.resolve([...this.files].map(([path, content]) => ({ path, content }))) }
 }
 
-test("template registry atomically covers exactly 22 services and all native view types", () => {
-  assert.equal(Object.keys(TEMPLATE_PACKS).length, 22)
+test("template registry atomically covers exactly 23 active services and all native view types", () => {
+  assert.equal(Object.keys(TEMPLATE_PACKS).length, 23)
   assert.deepEqual(Object.keys(TEMPLATE_PACKS).sort(), [
-    "applemusic", "bbdc", "bilibili", "daily", "dida", "douban", "douyin", "duolingo",
+    "applemusic", "applepodcast", "bbdc", "bilibili", "daily", "dida", "douban", "douyin", "duolingo",
     "flomo", "forest", "github", "guwendao", "jike", "keep", "neteasemusic", "podcast",
     "spotify", "toggl", "trakt", "weibo", "weread", "youtube",
   ])
@@ -74,9 +74,9 @@ test("automatic installation writes all requested service templates deterministi
   const manager = new TemplateManager(vault, { ...DEFAULT_SETTINGS })
   const first = await manager.ensure(Object.keys(TEMPLATE_PACKS))
   const second = await manager.ensure(Object.keys(TEMPLATE_PACKS))
-  assert.equal(first.created, 22)
-  assert.equal(second.skipped, 22)
-  assert.equal(vault.files.size, 22)
+  assert.equal(first.created, 23)
+  assert.equal(second.skipped, 23)
+  assert.equal(vault.files.size, 23)
 })
 
 test("template upgrades follow a user-moved dashboard instead of recreating the old path", async () => {

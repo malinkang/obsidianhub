@@ -189,10 +189,10 @@ test("image caching blocks private, insecure, oversized and active image content
   assert.equal(vault.binaries.size, 0)
 })
 
-test("all 22 service namespaces are consumed atomically from one manifest", async () => {
+test("all 23 active service namespaces are consumed atomically from one manifest", async () => {
   const services = [
     "weread", "podcast", "douban", "keep", "dida", "flomo", "duolingo", "bbdc",
-    "bilibili", "neteasemusic", "forest", "toggl", "applemusic", "trakt", "youtube",
+    "bilibili", "neteasemusic", "forest", "toggl", "applemusic", "applepodcast", "trakt", "youtube",
     "spotify", "douyin", "weibo", "github", "guwendao", "jike", "daily",
   ]
   const vault = new MemoryVault()
